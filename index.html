@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+    <link href="css/fonts.css" rel="stylesheet" />
+    <link href="libs/bootstrap/Content/bootstrap.css" rel="stylesheet" />
+    <link href="css/main.css" rel="stylesheet" />
+
+    <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>-->
+    <!--<script src="http://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>-->
+    <script src="libs/bootstrap/Scripts/jquery-1.9.1.js"></script>
+    <!--<script src="Scripts/jquery.unobtrusive-ajax.js"></script>-->
+    <script src="libs/bootstrap/Scripts/bootstrap.js"></script>
+    <script src="Scripts/angular.js"></script>
+    <script src="libs/angular-ymaps.js"></script>
+    <script src="js/main.js"></script>
+</head>
+<body>
+    <div class="container" ng-app="MyApp" ng-controller="MapCtrl">
+        <div class="row">
+            <div id="map" class="ng-animate col-sm-6">
+                <div ng-init="coords=[46.47598062192306, 30.734240443095025];center=[46.47598062192306, 30.734240443095025];zoom=13;init()">
+                    <yandex-map center="center" zoom="zoom">
+                        <!-- директива ng-repeat создаст все маркеры одним кодом  -->
+                        <ymap-marker ng-repeat="marker in markers" index="marker.title" coordinates="marker.coordinates"></ymap-marker>
+                    </yandex-map>
+                    <div class="input-group-addon">
+                        <label class="label-info">Широта: <input class="input input-lg" type="number" ng-model="circleGeometry.coords[0]" /></label><br>
+                        <label class="label-info">Долгота: <input class="input input-lg" type="number" ng-model="center[1]" /></label><br>
+                        <label class="label-info">Zoom: <input class="input input-lg" type="number" ng-model="zoom" /></label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <button ng-click="searchVk()" class="btn">search</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
