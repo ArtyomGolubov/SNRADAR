@@ -1,6 +1,10 @@
 /*! angular-ymaps 2015-10-27 */
 /*global angular*/
-angular.module('ymaps', [])
+
+// немного модернизированный angular-ymaps
+// добавлен объект на карте (круг)
+var angularYmaps = angular.module('ymaps', [])
+
 .factory('$script', ['$q', '$rootScope', function ($q, $rootScope) {
     "use strict";
     //классический кроссбраузерный способ подключить внешний скрипт
@@ -66,6 +70,7 @@ angular.module('ymaps', [])
         }
     };
 }])
+
 .constant('ymapsConfig', {
     apiUrl: '//api-maps.yandex.ru/2.1/?load=package.standard,package.clusters&mode=release&lang=ru-RU&ns=ymaps',
     mapBehaviors: ['default'],
@@ -93,7 +98,8 @@ angular.module('ymaps', [])
         timeout = setTimeout(later, wait);
     };
 })
-.controller('YmapController', ['$scope', '$element', 'ymapsLoader', 'ymapsConfig', 'debounce', function ($scope, $element, ymapsLoader, config, debounce) {
+
+.controller('YmapController', ['$scope', '$element', 'ymapsLoader', 'ymapsConfig', 'debounce', 'serviceForYmapsCircle', function ($scope, $element, ymapsLoader, config, debounce, serviceForYmapsCircle) {
     "use strict";
     function initAutoFit(map, collection, ymaps) {
         collection.events.add('boundschange', debounce(function () {
@@ -122,11 +128,13 @@ angular.module('ymaps', [])
         self.removeMarker = function (marker) {
             $scope.markers.remove(marker);
         };
+
         self.map = new ymaps.Map($element[0], {
             center   : $scope.center || [0, 0],
             zoom     : $scope.zoom || 0,
             behaviors: config.mapBehaviors
         });
+
         var collection = new ymaps.GeoObjectCollection({}, config.markerOptions);
         if(config.clusterize) {
           $scope.markers = new ymaps.Clusterer(config.clusterOptions);
@@ -134,70 +142,6 @@ angular.module('ymaps', [])
         } else {
           $scope.markers = collection;
         }
-
-        /// ----  Олег, вот здесь мой код ------
-        // нет времени разбираться как по красоте добавить круг на карту
-        $scope.circleGeometry = {
-            // Координаты центра круга.
-            coords: [46.48, 30.71],
-            // Радиус круга в метрах.
-            radius: 800
-        };
-
-        $scope.circleRadiuses = [
-            { id: 0, value: 10, name: '10 метров' },
-            { id: 1, value: 100, name: '100 метров' },
-            { id: 2, value: 800, name: '800 метров' },
-            { id: 3, value: 6000, name: '6000 метров' },
-            { id: 4, value: 50000, name: '50000 метров' }
-        ];
-
-        // Создаем круг.
-        var myCircle = new ymaps.Circle([
-            // Координаты центра круга.
-            $scope.circleGeometry.coords,
-            // Радиус круга в метрах.
-            $scope.circleGeometry.radius
-        ], {
-            // Описываем свойства круга.
-            // Содержимое балуна.
-            balloonContent: "Радиус круга - 10 км",
-            // Содержимое хинта.
-            hintContent: "Подвинь меня"
-        }, {
-            // Задаем опции круга.
-            // Включаем возможность перетаскивания круга.
-            draggable: true,
-            // Цвет заливки.
-            // Последний байт (77) определяет прозрачность.
-            // Прозрачность заливки также можно задать используя опцию "fillOpacity".
-            fillColor: "#DB709377",
-            // Цвет обводки.
-            strokeColor: "#990066",
-            // Прозрачность обводки.
-            strokeOpacity: 0.8,
-            // Ширина обводки в пикселях.
-            strokeWidth: 5
-        });
-
-        myCircle.events.add('dragend', function (e) {
-            // Получение ссылки на объект, который был передвинут.
-            var thisPlacemark = e.get('target');
-
-            // Определение координат объекта
-            $scope.$apply(function () {
-                $scope.circleGeometry.coords = thisPlacemark.geometry.getCoordinates();
-
-                console.log($scope.circleGeometry.coords[0]);
-            });
-            // и вывод их при щелчке на объект (метка/круг)
-            //thisPlacemark.properties.set('balloonContent', coords);
-
-        });
-
-        self.map.geoObjects.add(myCircle);
-        //-------------------
-        /// ----  конец ------
 
         self.map.geoObjects.add(collection);
         if(config.fitMarkers) {
@@ -231,6 +175,10 @@ angular.module('ymaps', [])
             });
             updatingBounds = false;
         });
+
+        // my strings
+        serviceForYmapsCircle.map = self.map;
+        //
 
     });
 }])
@@ -295,4 +243,20 @@ angular.module('ymaps', [])
             });
         }
     };
+});
+
+
+angularYmaps.factory('serviceForYmapsCircle', function () {
+    var serviceForYmapsCircle = {
+        //map
+        map: null,
+        // Координаты центра круга.
+        properties: {
+            coords: [46.48, 30.71],
+            // Радиус круга в метрах.
+            radius: 800
+        }
+    };
+    console.log(serviceForYmapsCircle);
+    return serviceForYmapsCircle;
 });

@@ -5,6 +5,7 @@
 	<meta charset="utf-8" />
     <link href="css/fonts.css" rel="stylesheet" />
     <link href="libs/bootstrap/Content/bootstrap.css" rel="stylesheet" />
+    <link href="libs/bootstrap/Content/bootstrap-datetimepicker.css" rel="stylesheet" />
     <link href="css/main.css" rel="stylesheet" />
 
     <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>-->
@@ -17,25 +18,84 @@
     <script src="js/main.js"></script>
 </head>
 <body>
-    <div class="container" ng-app="MyApp" ng-controller="MapCtrl">
-        <div class="row">
-            <div id="map" class="ng-animate col-sm-6">
-                <div ng-init="coords=[46.47598062192306, 30.734240443095025];center=[46.47598062192306, 30.734240443095025];zoom=13;init()">
-                    <yandex-map center="center" zoom="zoom">
-                        <!-- директива ng-repeat создаст все маркеры одним кодом  -->
-                        <ymap-marker ng-repeat="marker in markers" index="marker.title" coordinates="marker.coordinates"></ymap-marker>
-                    </yandex-map>
-                    <div class="input-group-addon">
-                        <label class="label-info">Широта: <input class="input input-lg" type="number" ng-model="circleGeometry.coords[0]" /></label><br>
-                        <label class="label-info">Долгота: <input class="input input-lg" type="number" ng-model="center[1]" /></label><br>
-                        <label class="label-info">Zoom: <input class="input input-lg" type="number" ng-model="zoom" /></label>
+    <div id="content">
+        <div class="container" ng-app="MyApp" ng-controller="MapCtrl">
+            <div class="row">
+                <div id="map" class="ng-animate col-lg-6">
+                    <div ng-init="coords=[46.47598062192306, 30.734240443095025];center=[46.47598062192306, 30.734240443095025];zoom=13;init()">
+                        <yandex-map center="center" zoom="zoom">
+                            <!-- директива ng-repeat создаст все маркеры одним кодом  -->
+                            <ymap-marker ng-repeat="marker in markers" index="marker.title" coordinates="marker.coordinates"></ymap-marker>
+                        </yandex-map>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="search_opt_1">
+                                    <label class="flex horizontal start">Широта:&nbsp;&nbsp;&nbsp;&nbsp;<span class="" ng-model="circleProp.coords[0]">{{circleProp.coords[0]}}</span></label>
+                                    <label class="flex horizontal start">Долгота:&nbsp;&nbsp;&nbsp;     <span class="" ng-model="circleProp.coords[1]">{{circleProp.coords[1]}}</span></label><br>
+                                    <label class="flex horizontal start">
+                                        Радиус:&nbsp;&nbsp;&nbsp;
+                                        <select class="form-control" name="radius" id="radius" ng-model="circleIndex" ng-change="selectRadius()">
+                                            fgdfg
+                                            <option ng-repeat="radius in radiuses" value="{{radius.id}}" ng-bind="radius.name"></option>
+                                        </select>
+                                    </label><br>
+                                    <label class="flex horizontal start">
+                                        От:&nbsp;
+                                        <div class="input-group date" id="datetimepicker1">
+                                            <input type="text" class="form-control" name="StartDate" data-date-format="YYYY-MM-DD  HH:mm" />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </label>
+                                    <label class="flex horizontal start">
+                                        До:&nbsp;
+                                        <div class="input-group date" id="datetimepicker2">
+                                            <input type="text" class="form-control" name="EndDate" data-date-format="YYYY-MM-DD  HH:mm" />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="search_opt_2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <div id="search">
+                        <button ng-click="searchVk()" class="btn">search</button>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6">
-                <button ng-click="searchVk()" class="btn">search</button>
-            </div>
         </div>
     </div>
+    <script src="libs/bootstrap/moment/moment-with-locales.js"></script>
+    <script src="libs/bootstrap/modernizr-2.6.2.js"></script>
+    <script src="libs/bootstrap/moment/moment.js"></script>
+    <script src="libs/bootstrap/respond.js"></script>
+    <script src="libs/bootstrap/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript">
+    $(function() {
+        //Инициализация datetimepicker8 и datetimepicker9
+        $("#datetimepicker1").datetimepicker({ locale: 'en', defaultDate: new Date(2016, 1, 1, 00, 01) });
+        $("#datetimepicker2").datetimepicker({ locale: 'en', defaultDate: new Date() });
+        //При изменении даты в 1 datetimepicker, она устанавливается как минимальная для 2 datetimepicker
+        $("#datetimepicker1").on("dp.change", function(e) {
+            $("#datetimepicker2").datetimepicker({ MinDate: e.date });
+        });
+        //При изменении даты в 2 datetimepicker, она устанавливается как максимальная для 1 datetimepicker
+        $("#datetimepicker2").on("dp.change", function(e) {
+            $("#datetimepicker1").datetimepicker({ MaxDate: e.date  });
+        });
+    });
+    </script>
 </body>
 </html>
