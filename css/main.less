@@ -11,37 +11,43 @@ yandex-map {
     width: 100%;
     height: 500px;
     display: block;
-    
-    -moz-border-radius: 14px 14px 14px 14px; /* Firefox */
--webkit-border-radius: 14px 14px 14px 14px; /* Safari, Chrome */
--khtml-border-radius: 14px 14px 14px 14px; /* KHTML */
-border-radius: 14px 14px 14px 14px; /* CSS3 */
-
-overflow: hidden;
-
-position: relative;
 }
 
-#map {
+yandex-map {
+    width: 100%;
+    height: 500px;
+    display: block;
     border-radius: 5px;
+    overflow: hidden;
+    /*три часа гуглил вот это*/
+    > ymaps {
+        border-radius: 5px;
+        overflow: hidden;
+    }
 }
 
 .flex {
     display: flex;
-    &.vertical{
+
+    &.vertical {
         flex-flow: column;
+
         &.center {
             align-items: center;
         }
+
         &.start {
             align-items: flex-start;
         }
     }
-    &.horizontal{
+
+    &.horizontal {
         flex-flow: row;
+
         &.center {
             justify-content: center;
         }
+
         &.start {
             justify-content: flex-start;
         }
@@ -73,5 +79,3 @@ position: relative;
 #content {
     margin-top: 30px;
 }
-
-
