@@ -3,7 +3,7 @@
 
 // немного модернизированный angular-ymaps
 // добавлен объект на карте (круг)
-var angularYmaps = angular.module('ymaps', [])
+angular.module('ymaps', [])
 
 .factory('$script', ['$q', '$rootScope', function ($q, $rootScope) {
     "use strict";
@@ -99,7 +99,7 @@ var angularYmaps = angular.module('ymaps', [])
     };
 })
 
-.controller('YmapController', ['$scope', '$element', 'ymapsLoader', 'ymapsConfig', 'debounce', 'serviceForYmapsCircle', function ($scope, $element, ymapsLoader, config, debounce, serviceForYmapsCircle) {
+.controller('YmapController', ['$scope', '$element', 'ymapsLoader', 'ymapsConfig', 'debounce', function ($scope, $element, ymapsLoader, config, debounce) {
     "use strict";
     function initAutoFit(map, collection, ymaps) {
         collection.events.add('boundschange', debounce(function () {
@@ -176,10 +176,10 @@ var angularYmaps = angular.module('ymaps', [])
             updatingBounds = false;
         });
 
-        // my strings
-        serviceForYmapsCircle.map = self.map;
+        // my strings in this code
+        //serviceForYmapsCircle.map = self.map;
+        ymapsLoader.map = self.map;
         //
-
     });
 }])
 .directive('yandexMap', ['ymapsLoader', function (ymapsLoader) {
@@ -245,18 +245,3 @@ var angularYmaps = angular.module('ymaps', [])
     };
 });
 
-
-angularYmaps.factory('serviceForYmapsCircle', function () {
-    var serviceForYmapsCircle = {
-        //map
-        map: null,
-        // Координаты центра круга.
-        properties: {
-            coords: [46.48, 30.71],
-            // Радиус круга в метрах.
-            radius: 800
-        }
-    };
-    console.log(serviceForYmapsCircle);
-    return serviceForYmapsCircle;
-});

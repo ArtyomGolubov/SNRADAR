@@ -1,11 +1,15 @@
 ﻿body {
     font-family: Exo2Regular;
-    background-color: #3a4141;
+    background-color: @colorBacground;
 }
 
 label {
     font-weight: inherit !important;
 }
+
+@colorBacground: #3a4141;
+@colorMainFont: #fff;
+@colorActive: #2a2f39;
 
 yandex-map {
     width: 100%;
@@ -51,31 +55,123 @@ yandex-map {
         &.start {
             justify-content: flex-start;
         }
+
+        &.between {
+            justify-content: space-between;
+        }
     }
 }
 
 .search_opt_1, .search_opt_2 {
     margin: 20px 0px 10px 0px;
-    width: 100%;
-    background-color: #3a4141;
-    color: #fff;
+    max-width: 350px;
+    background-color: @colorBacground;
+    color: @colorMainFont;
     font-size: 17px;
     padding: 5px;
+
+    select:focus {
+        border-color: @colorMainFont;
+        -webkit-box-shadow: none !important;
+        -moz-box-shadow: none !important;
+        box-shadow: none !important;
+    }
 }
 
-#datetimepicker1, #datetimepicker2 {
-    margin-right: 40px;
-    color: #3a4141;
+.search_param {
+    min-width: 70px;
 }
+
+/* magiya! input shadow - off!!!*/
+#datetimepicker1 input,
+#datetimepicker2 input,
+.adds input {
+    outline: none;
+  /*border: none !important;*/
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+
+  background-color: transparent;
+  text-align: center;
+}
+
+#datetimepicker1 input:active,
+#datetimepicker2 input:active,
+#datetimepicker1 input:focus,
+#datetimepicker2 input:focus {
+    border-color: @colorMainFont;
+}
+
+
+/* bootstrap custom */
+#datetimepicker1, #datetimepicker2 {
+    margin-right: 70px;
+    color: @colorBacground;
+    >input {
+        background-color: @colorBacground;
+        color: @colorMainFont;
+    }
+    >.dropdown-menu, span {
+        background-color: @colorBacground;
+        color: @colorMainFont;
+        /*.span:hover {
+            background-color: blueviolet;
+        }*/
+    }
+
+    .picker-switch:hover,
+    .day:hover,
+    .hour:hover,
+    .minute:hover{
+        background-color: @colorMainFont !important;
+        color: @colorBacground;
+    }
+
+    .active {
+        background-color: darken(@colorBacground, 10%) !important;
+        color: @colorMainFont;
+    }
+
+    .active:hover {
+        background-color: darken(@colorBacground, 5%) !important;
+        color: @colorMainFont;
+    }
+
+    .prev:hover,
+    .next:hover,
+    .dow:hover{
+        background-color: @colorBacground !important;
+        color: @colorMainFont;
+    }
+}
+
+.bootstrap-datetimepicker-widget {
+    display: block;
+}
+
+.container {
+    @media (min-width: 1200px){
+        width: 100% !important;
+    }
+}
+/*----------------------*/
 
 #radius {
-    margin-right: 12px;
+    /*margin-right: 12px;*/
+    background-color: @colorBacground;
+    color: @colorMainFont;
 }
 
 #search {
-    float: right;
+    margin-top: 20px;
+    float: left;
 }
 
 #content {
     margin-top: 30px;
 }
+
+
+
+

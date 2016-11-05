@@ -1,4 +1,4 @@
-﻿var app = angular.module('MyApp', ['ymaps']);
+﻿var app = angular.module('MyApp', ['ymaps', 'ngCookies']);
 
 app.config(function (ymapsConfig) {
     //ymapsConfig.fitMarkers = false;
@@ -8,22 +8,70 @@ app.config(function (ymapsConfig) {
     ymapsConfig.markerOptions.preset = 'islands#darkgreenStretchyIcon';
 });
 
-app.controller('MapCtrl', function ($scope, ymapsLoader, serviceSearchVk, serviceForYmapsCircle) {
-    //console.log(serviceForYmapsCircle);
+app.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSearchVk) {
+
+
+    // cookies --------------------
+    // вынимаем куки
+    var cookeis = $cookies.getObject('mapConfig');
+
+    if (cookeis)
+    {
+        console.log(cookeis);
+        $scope.map = cookeis.map;
+        $scope.circleProp = cookeis.circle;
+        console.log($scope.map);
+        console.log($scope.circleProp);
+    }
+    else {
+        console.log('cookie mapConfig is not have');
+        cookeis = {
+            map: {
+                center: [46.48, 30.71],
+                zoom: 12
+            },
+            circle: {
+                // Координаты центра круга.
+                coords: [46.48, 30.71],
+                // Радиус круга в метрах.
+                radius: 800
+            }
+        }
+        $scope.map = cookeis.map;
+        $scope.circleProp = cookeis.circle;
+    }
+
+    // пишем куки
+    $scope.$watch('map', function () {
+        $cookies.putObject('mapConfig', cookeis);
+    }, true);
+    $scope.$watch('circleProp', function () {
+        $cookies.putObject('mapConfig', cookeis);
+    }, true);
+    //-----------------------------
 
     //создаем массив координат. При желании его можно загружать и с сервера,
     //подробнее об этом - в документации Angular
     $scope.markers = [];
 
     //настройки положения карты
-    $scope.map = {
-        center: [53.57, 37.13],
-        zoom: 12
-    };
+    if (!cookeis) {
+        $scope.map = {
+            center: [53.57, 37.13],
+            zoom: 12
+        };
+    }
 
     //---- Начало блока кода для добавления и работы круга ----
     // свойства круга.
-    $scope.circleProp = serviceForYmapsCircle.properties;
+    if (!cookeis) {
+        $scope.circleProp = {
+            // Координаты центра круга.
+            coords: [53.57, 37.13],
+            // Радиус круга в метрах.
+            radius: 800
+        }
+    }
 
     $scope.radiuses = [
         { id: 0, value: 10, name: '10 метров' },
@@ -36,6 +84,7 @@ app.controller('MapCtrl', function ($scope, ymapsLoader, serviceSearchVk, servic
     $scope.selectRadius = function () {
         $scope.myCircle.geometry.setRadius($scope.radiuses[$scope.circleIndex].value);
         $scope.myCircle.properties.set("balloonContent", "Радиус круга - " + $scope.radiuses[$scope.circleIndex].name);
+        $scope.circleProp.radius = $scope.radiuses[$scope.circleIndex].value;
     }
     
     ymapsLoader.ready(function (ymaps) {
@@ -58,13 +107,14 @@ app.controller('MapCtrl', function ($scope, ymapsLoader, serviceSearchVk, servic
             // Цвет заливки.
             // Последний байт (77) определяет прозрачность.
             // Прозрачность заливки также можно задать используя опцию "fillOpacity".
-            fillColor: "#DB709377",
+            fillColor: "#3a4141",
+            fillOpacity: 0.5,
             // Цвет обводки.
-            strokeColor: "#990066",
+            strokeColor: "#3a4141",
             // Прозрачность обводки.
             strokeOpacity: 0.8,
             // Ширина обводки в пикселях.
-            strokeWidth: 5
+            strokeWidth: 3
         });
 
         $scope.myCircle.events.add('dragend', function (e) {
@@ -73,8 +123,8 @@ app.controller('MapCtrl', function ($scope, ymapsLoader, serviceSearchVk, servic
 
             // Определение координат объекта
             $scope.$applyAsync(function () {
-                serviceForYmapsCircle.properties.coords = thisPlacemark.geometry.getCoordinates();
-                console.log(serviceForYmapsCircle.properties.coords);
+                $scope.circleProp.coords = thisPlacemark.geometry.getCoordinates();
+                console.log($scope.circleProp.coords);
             });
             // и вывод их при щелчке на объект (метка/круг)
             //thisPlacemark.properties.set('balloonContent', coords);
@@ -82,28 +132,34 @@ app.controller('MapCtrl', function ($scope, ymapsLoader, serviceSearchVk, servic
 
         //Без setTimeout срабатывает раньше инициализации карты
         setTimeout(function () {
-            serviceForYmapsCircle.map.geoObjects.add($scope.myCircle);
+            ymapsLoader.map.geoObjects.add($scope.myCircle);
         }, 0);
 
-        $scope.$watch('circleGeometry.radius', function () {
-            $scope.$applyAsync(function () {
-                $scope.myCircle.geometry.setRadius(serviceForYmapsCircle.properties.radius);
-            });
-        });
-        $scope.$watch('circleGeometry.coords', function () {
-            $scope.$applyAsync(function () {
-                $scope.myCircle.geometry.setCoordinates(serviceForYmapsCircle.properties.coords);
-            });
-        });
+        //$scope.$watch('circleGeometry.radius', function () {
+        //    $scope.$applyAsync(function () {
+        //        $scope.myCircle.geometry.setRadius(serviceForYmapsCircle.properties.radius);
+        //    });
+        //});
+        //$scope.$watch('circleGeometry.coords', function () {
+        //    $scope.$applyAsync(function () {
+        //        $scope.myCircle.geometry.setCoordinates(serviceForYmapsCircle.properties.coords);
+        //    });
+        //});
         //-------------------
         /// ----  конец блока для добавления и работы с кругом ------
+
+        //console.log($cookies.get('myFavorite'));
+        //// Retrieving a cookie
+        //var favoriteCookie = $cookies.get('myFavorite');
+        //// Setting a cookie
+        //$cookies.put('myFavorite', 'oatmeal');
     });
     
 
     // жмем кнопку поиска
     $scope.searchVk = function () {
         console.log($scope.center);
-        console.log(serviceForYmapsCircle.map);
+        console.log(ymapsLoader.map);
         serviceSearchVk.search();
         //$scope.markers = serviceSearchVk.markers;
     }
