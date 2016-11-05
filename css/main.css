@@ -69,13 +69,14 @@ yandex-map > ymaps {
 #datetimepicker1 input,
 #datetimepicker2 input,
 .adds input {
-  outline: none;
+  /*outline: none;*/
   /*border: none !important;*/
   -webkit-box-shadow: none !important;
   -moz-box-shadow: none !important;
   box-shadow: none !important;
   background-color: transparent;
   text-align: center;
+  white-space: nowrap;
 }
 #datetimepicker1 input:active,
 #datetimepicker2 input:active,
