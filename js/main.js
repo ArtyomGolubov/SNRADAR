@@ -141,17 +141,21 @@ app.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSearch
     
     ///////  ПОИСК ///////
     //---------------------------------------------------//
-    $scope.resultList = {
-        users: [{ first_name: 'dsdsd', last_name: 'mama', photos: [] }, { first_name: 'gggg', last_name: 'papa', photos: [] }],
-        groups: [],
-        photos: []
-    };
+    $scope.$applyAsync(function () {
+        $scope.resultList = {
+            users: [{ first_name: 'dsdsd', last_name: 'mama', photos: [] }, { first_name: 'gggg', last_name: 'papa', photos: [] }],
+            groups: [],
+            photos: []
+        };
+    });
     // жмем кнопку поиска
     $scope.searchVk = function () {
+
         var dateStart = Date.parse($("#datetimepicker1").find('input').eq(0).val()) / 1000;
         var dateEnd = Date.parse($("#datetimepicker2").find('input').eq(0).val()) / 1000;
 
-        $scope.response = serviceSearchVk.GetPhotos({
+        $scope.response = serviceSearchVk.GetPhotos1({
+            count: 200,
             offset: 0,
             start_time: dateStart,
             end_time: dateEnd,
@@ -159,13 +163,56 @@ app.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSearch
             long: $scope.circleProp.coords[1],
             radius: $scope.radiuses[$scope.circleProp.radius].value
         }, function (res) {
+            console.log('333');
             $scope.$apply(function () {
                 $scope.resultList = res;
-                console.log(res);
+                console.log('result: ', $scope.resultList);
             });
         });
     }
-    //---------------------------------------------------//
+    //----------------- Жмем на фото -------------------//
+    $scope.photoModal = function ($event, photo) {
+        //console.log(angular.element($event.target));
+        var elem = angular.element($event.target);
+        var photoOrig = null;
+        if (photo.photo_1280) {
+            photoOrig = photo.photo_1280;
+            console.log('photo.photo_1280');
+        }
+        else if (photo.photo_807) {
+            photoOrig = photo.photo_807;
+            console.log('photo.photo_807');
+        }
+        else if (photo.photo_604) {
+            photoOrig = photo.photo_604;
+            console.log('photo.photo_604');
+        }
+
+        console.log(photo);
+        console.log(document.documentElement.scrollTop);
+        //this.preventDefault(); // выключaем стaндaртную рoль элементa
+        $('#overlay').fadeIn(200, // снaчaлa плaвнo пoкaзывaем темную пoдлoжку
+		 	function () { // пoсле выпoлнения предъидущей aнимaции
+		 	    $('#photo_modal')
+                    .attr('src', photoOrig)
+					.css('display', 'block') // убирaем у мoдaльнoгo oкнa display: none;
+					.animate({ opacity: 1 }, 200); // плaвнo прибaвляем прoзрaчнoсть oднoвременнo сo съезжaнием вниз
+
+		 	    var photo_discription = $('.photo_discription').eq(0);
+		 	    var owner_name = $('.owner_name').eq(0);
+		 	    if (photo.user) {
+		 	        owner_name.text(photo.user.first_name + ' ' + photo.user.last_name);
+		 	        owner_name.attr('href', 'https://vk.com/id' + photo.user.id)
+		 	    }
+		 	    if (photo.group) {
+		 	        owner_name.text(photo.group.name);
+		 	        owner_name.attr('href', 'https://vk.com/public' + photo.group.id)
+		 	    }
+		 	    photo_discription.css('display', 'block')
+		 	    .animate({ opacity: 1 , left: '10%'}, 400);
+		 	    console.log('after');
+		 	});
+    }
 });
 
 app.service('serviceSearchVk', function () {
@@ -204,7 +251,7 @@ app.service('serviceSearchVk', function () {
                 }
             }
         }
-        console.log(users);
+        //console.log(users);
         return users;
     }
 
@@ -218,13 +265,164 @@ app.service('serviceSearchVk', function () {
                 }
             }
         }
-        console.log(groups);
+        //console.log(groups);
         return groups;
+    }
+
+    function packingUsersForPhotos(photos, users) {
+        var i, k;
+        for (i = 0; i < photos.length; i++) {
+            if (photos[i].owner_id > 0) {
+                for (k = 0; k < users.length; k++) {
+                    if (photos[i].owner_id == users[k].id) {
+                        photos[i].user = users[k];
+                        photos[i].group = null;
+                    }
+                }
+            }
+        }
+    }
+
+    function packingGroupsForPhotos(photos, groups) {
+        var i, k;
+        for (i = 0; i < photos.length; i++) {
+            if (photos[i].owner_id < 0) {
+                for (k = 0; k < groups.length; k++) {
+                    if (Math.abs(photos[i].owner_id) == groups[k].id) {
+                        photos[i].group = groups[k];
+                        photos[i].user = null;
+                    }
+                }
+            }
+        }
+    }
+
+    // --------- GetOhotos1 ---------------------
+    // Использование публичных методов
+    this.GetPhotos1 = function (parameters, succes) {
+        var users = [];
+        var groups = [];
+        var photos = [];
+        var usersIds = [];
+        var groupsIds = [];
+        var VKdata = {
+            users: users,
+            groups: groups,
+            photos: photos
+        };
+
+        $.ajax({
+            url: "https://api.vk.com/method/photos.search",
+            data: {
+                count: parameters.count,
+                start_time: parameters.start_time,
+                end_time: parameters.end_time,
+                lat: parameters.lat,
+                long: parameters.long,
+                radius: parameters.radius,
+                fields: 'owner_id,photo_130,date',
+                v: "5.26",
+            },
+            dataType: "jsonp",
+            success: function (data) {
+                var i;
+
+                if (!data || !data.response || !data.response.items) {
+                    console.error("VK returned some crap 1:", data);
+                    return;
+                } else {
+                    photos = data.response.items;
+                    console.log('data.response.count = ' + data.response.count);
+                    console.log('data.response.items.length = ' + data.response.items.length);
+                    VKdata.photos = photos;
+                    VKdata.countPhotosVK = data.response.count;
+                    VKdata.countPhotosRES = data.response.items.length;
+                }
+                for (i = 0; i < data.response.items.length; i++) {
+                    if (data.response.items[i].owner_id > 0) {
+                        usersIds.push(data.response.items[i].owner_id);
+                    } else {
+                        groupsIds.push(Math.abs(data.response.items[i].owner_id));
+                    }
+                }
+                usersIds = getUniqueArr(usersIds);
+                groupsIds = getUniqueArr(groupsIds);
+                console.log('usersIds : ', usersIds);
+                console.log('groupsIds : ', groupsIds);
+
+                if (usersIds.length > 0) {
+                    $.ajax({
+                        url: "https://api.vk.com/method/users.get",
+                        data: {
+                            user_ids: usersIds,
+                            fields: 'nickname,photo_max_orig,screen_name,maiden_name',
+                            v: "5.26",
+                        },
+                        dataType: "jsonp",
+                        success: function (data) {
+                            var i;
+
+                            if (!data || !data.response) {
+                                console.error("VK returned some crap 2:", data);
+                                return;
+                            }
+                            for (i = 0; i < data.response.length; i++) {
+                                users.push(data.response[i]);
+                            }
+                            packingPhotosForUsers(users, photos);
+                            packingUsersForPhotos(photos, users);
+                            succes(VKdata);
+                            VKdata.users = users;
+                        }
+                    });
+                }
+
+                if (groupsIds.length > 0) {
+                    $.ajax({
+                        url: "https://api.vk.com/method/groups.getById",
+                        data: {
+                            group_ids: groupsIds,
+                            fields: 'description',
+                            v: "5.26",
+                        },
+                        dataType: "jsonp",
+                        success: function (data) {
+                            var i;
+
+                            if (!data || !data.response) {
+                                console.error("VK returned some crap 3:", data);
+                                return;
+                            }
+                            for (i = 0; i < data.response.length; i++) {
+                                groups.push(data.response[i]);
+                            }
+                            packingPhotosForGroups(groups, photos);
+                            packingGroupsForPhotos(photos, groups);
+                            VKdata.groups = groups;
+                        }
+                    });
+                }
+            }
+        });
+
+        return VKdata;
     }
 
     // --------- GetPhotos4 ------------------
     // получаем первые 3000 фотографий. Реально это предел при использовании execute
-    this.GetPhotos = function(parameters, succes) {
+    // ВАЖНО!!! Работает только при авторизации приложения!
+    this.GetPhotos2 = function (parameters, succes) {
+        console.log('444');
+        // обнуляем коллекцию
+        VKdata = {
+            users: [],
+            groups: [],
+            photos: [],
+            ids: {
+                usersIds: [],
+                groupsIds: []
+            }
+        };
 
         var code = 'var inc = 0;'
             + 'var part = 25;'
@@ -258,21 +456,21 @@ app.service('serviceSearchVk', function () {
                 console.log("data:", data);
 
                 if (VKdata.photos.length > 1) {
-                    console.log("data.response[0].count : ", data.response[0].count);
+                    //console.log("data.response[0].count : ", data.response[0].count);
 
                     DateLastPhoto = VKdata.photos[VKdata.photos.length - 1].date;
-                    console.log("DateLastPhoto:", DateLastPhoto);
+                    //console.log("DateLastPhoto:", DateLastPhoto);
 
-                    console.log("VKdata.photos.length:", VKdata.photos.length);
+                    //console.log("VKdata.photos.length:", VKdata.photos.length);
 
                     GetUsersAndGroupsIds();
-                    console.log("VKdata:", VKdata);
+                    //console.log("VKdata:", VKdata);
                     GetUsers(VKdata.ids, succes);
 
                     //succes(VKdata);
                 } else {
-                    console.log("VKdata:", VKdata);
-                    console.log("Date last photo: ", String(new Date(DateLastPhoto * 1000)).substr(0, 25));
+                    //console.log("VKdata:", VKdata);
+                    //console.log("Date last photo: ", String(new Date(DateLastPhoto * 1000)).substr(0, 25));
                     //succes(VKdata);
                     VKdata.photos = [];
                 }
@@ -281,8 +479,8 @@ app.service('serviceSearchVk', function () {
     }
 
     function GetUsersAndGroupsIds() {
-        console.log("GetUsersAndGroupsIds");
-        console.log("VKdata.photos[0].owner_id:", VKdata.photos[0].owner_id);
+        //console.log("GetUsersAndGroupsIds");
+        //console.log("VKdata.photos[0].owner_id:", VKdata.photos[0].owner_id);
         for (var i = 0; i < VKdata.photos.length; i++) {
             if (VKdata.photos[i].owner_id > 0) {
                 VKdata.ids.usersIds.push(VKdata.photos[i].owner_id);
@@ -292,14 +490,14 @@ app.service('serviceSearchVk', function () {
                 //console.log("VKdata.ids for group:", VKdata.photos[i].owner_id);
             }
         }
-        console.log("VKdata.ids:", VKdata.ids);
+        //console.log("VKdata.ids:", VKdata.ids);
         VKdata.ids.usersIds = getUniqueArr(VKdata.ids.usersIds);
         VKdata.ids.groupsIds = getUniqueArr(VKdata.ids.groupsIds);
     }
 
     function GetUsers(parameters, succes) {
-        console.log("GetUsers");
-        console.log("parameters", parameters);
+        //console.log("GetUsers");
+        //console.log("parameters", parameters);
         var code = 'var inc = 0;'
             + 'var part = 25;'
             + 'var offset = 0;'
@@ -328,10 +526,38 @@ app.service('serviceSearchVk', function () {
                     }
                     //usersReady = true;
                     packingPhotosForUsers(VKdata.users, VKdata.photos);
-                    console.log("VKdata:", VKdata);
+                    //console.log("VKdata:", VKdata);
                     succes(VKdata);
                 }
             });
         }
     }
+});
+
+
+// --- simple functions ----------------
+// ------------ call me -----------------------
+$(document).ready(function () { // вся мaгия пoсле зaгрузки стрaницы
+    //$('.photo_in_result').click(function (event) { // лoвим клик пo ссылки с id="go"
+    //    event.preventDefault(); // выключaем стaндaртную рoль элементa
+    //    $('#overlay').fadeIn(200, // снaчaлa плaвнo пoкaзывaем темную пoдлoжку
+	//	 	function () { // пoсле выпoлнения предъидущей aнимaции
+	//	 	    $('#call_me')
+	//				.css('display', 'block') // убирaем у мoдaльнoгo oкнa display: none;
+	//				.animate({ opacity: 1 }, 200); // плaвнo прибaвляем прoзрaчнoсть oднoвременнo сo съезжaнием вниз
+	//	 	});
+    //});
+    /* Зaкрытие мoдaльнoгo oкнa, тут делaем тo же сaмoе нo в oбрaтнoм пoрядке */
+    $('#overlay').click(function () { // лoвим клик пo крестику или пoдлoжке
+        $('#photo_modal')
+			.animate({ opacity: 0 }, 200,  // плaвнo меняем прoзрaчнoсть нa 0 и oднoвременнo двигaем oкнo вверх
+				function () { // пoсле aнимaции
+				    $(this).css('display', 'none'); // делaем ему display: none;
+				    $('.photo_discription').eq(0)
+                        .animate({ opacity: 1, left: '210%' }, 400);
+                        //.css('display', 'none');
+				    $('#overlay').fadeOut(200); // скрывaем пoдлoжку
+				}
+			);
+    });
 });

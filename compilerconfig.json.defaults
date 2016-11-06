@@ -10,7 +10,7 @@
       "rootPath": "",
       "sourceMapRoot": "",
       "sourceMapBasePath": "",
-      "sourceMap": false
+      "sourceMap": true
     },
     "sass": {
       "includePath": "",
@@ -31,7 +31,7 @@
     "coffeescript": {
       "bare": false,
       "runtimeMode": "node",
-      "sourceMap": false
+      "sourceMap": true
     }
   },
   "minifiers": {
