@@ -225,6 +225,10 @@ yandex-map {
     max-height: 80%;
 
     background-color: @colorBacground;
+
+    @media only screen and (max-height : 769px) {
+        top: 15%;
+    }
 }
 
 .info_style {
@@ -251,12 +255,30 @@ yandex-map {
 
     .photo_date {
         color: darken(@colorMainFont, 5%) !important;
+        width: 170px;
+    }
+
+    .close_btn {
+        float: right;
+        padding-left: 10px;
+        right: 0px;
+        font-size: 26px;
+        cursor: pointer;
+    }
+
+    .close_btn:hover {
+        color: darken(@colorBacground, 10%);
+    }
+
+    @media only screen and (max-height : 481px) {
+        top: 5%;
     }
 }
 
 .photo_in_result {
     cursor: pointer;
 }
+
 
 
 
