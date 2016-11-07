@@ -46,10 +46,13 @@
     </script>
 
     <div id="overlay"></div>
-    <div class="photo_discription">
+    <div class="photo_discription_top">
         <a class="owner_name" target="_blank"></a>
+        <div class="photo_date"></div>
     </div>
-    <img id="photo_modal" class="img-responsive"/>
+    <img id="photo_modal" class="img-responsive" />
+
+    <div id="photo_date"></div>
     <div id="content" ng-app="MyApp" ng-controller="MapCtrl">
         <div class="container">
             <div class="row">
@@ -112,9 +115,15 @@
                 <button ng-click="searchVk()" class="btn">search</button>
             </div>
             <hr />
+
             <div class="result_view">
+                <div class="search_info">
+                    <p ng-model="countOfPhotos">Количество фотографий: {{countOfPhotos}}</p>
+                    <p ng-model="countOfUsers">Количество пользователей: {{countOfUsers}}</p>
+                    <p ng-model="countOfGroups">Количество групп: {{countOfGroups}}</p>
+                </div>
                 <img ng-repeat="photo in resultList.photos" ng-model="photo" ng-src="{{photo.photo_130}}"
-                      class="photo_in_result" ng-click="photoModal($event, photo)" title=""/>
+                     class="photo_in_result" ng-click="photoModal($event, photo)" title="" />
             </div>
         </div>
     </div>
@@ -124,36 +133,36 @@
     <script src="libs/bootstrap/respond.js"></script>
     <script src="libs/bootstrap/bootstrap-datetimepicker.js"></script>
     <script type="text/javascript">
-    $(function() {
-        //Инициализация datetimepicker8 и datetimepicker9
-        $("#datetimepicker1").datetimepicker({
-            locale: 'ru', defaultDate: new Date() - new Date(86400000), //new Date(2016, 1, 1, 00, 01),
-            //sideBySide: true,
-            icons: {
-                time: "fa fa-clock-o",
-                date: "fa fa-calendar",
-                up: "fa fa-arrow-up",
-                down: "fa fa-arrow-down"
-            }
+        $(function () {
+            //Инициализация datetimepicker8 и datetimepicker9
+            $("#datetimepicker1").datetimepicker({
+                locale: 'ru', defaultDate: new Date() - new Date(86400000), //new Date(2016, 1, 1, 00, 01),
+                //sideBySide: true,
+                icons: {
+                    time: "fa fa-clock-o",
+                    date: "fa fa-calendar",
+                    up: "fa fa-arrow-up",
+                    down: "fa fa-arrow-down"
+                }
+            });
+            $("#datetimepicker2").datetimepicker({
+                locale: 'ru', defaultDate: new Date(),
+                icons: {
+                    time: "fa fa-clock-o",
+                    date: "fa fa-calendar",
+                    up: "fa fa-arrow-up",
+                    down: "fa fa-arrow-down"
+                }
+            });
+            //При изменении даты в 1 datetimepicker, она устанавливается как минимальная для 2 datetimepicker
+            $("#datetimepicker1").on("dp.change", function (e) {
+                $("#datetimepicker2").datetimepicker({ MinDate: e.date });
+            });
+            //При изменении даты в 2 datetimepicker, она устанавливается как максимальная для 1 datetimepicker
+            $("#datetimepicker2").on("dp.change", function (e) {
+                $("#datetimepicker1").datetimepicker({ MaxDate: e.date });
+            });
         });
-        $("#datetimepicker2").datetimepicker({
-            locale: 'ru', defaultDate: new Date(),
-            icons: {
-                time: "fa fa-clock-o",
-                date: "fa fa-calendar",
-                up: "fa fa-arrow-up",
-                down: "fa fa-arrow-down"
-            }
-        });
-        //При изменении даты в 1 datetimepicker, она устанавливается как минимальная для 2 datetimepicker
-        $("#datetimepicker1").on("dp.change", function(e) {
-            $("#datetimepicker2").datetimepicker({ MinDate: e.date });
-        });
-        //При изменении даты в 2 datetimepicker, она устанавливается как максимальная для 1 datetimepicker
-        $("#datetimepicker2").on("dp.change", function(e) {
-            $("#datetimepicker1").datetimepicker({ MaxDate: e.date });
-        });
-    });
     </script>
 </body>
 </html>

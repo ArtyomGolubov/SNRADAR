@@ -175,6 +175,16 @@ yandex-map {
 }
 
 .result_view {
+    .search_info {
+        margin-bottom: 10px;
+        color: @colorMainFont;
+        font-family: Exo2Regular;
+        font-size: 17px;
+        p {
+            margin: 0;
+        }
+    }
+
     img {
         height: 75px;
     }
@@ -216,7 +226,8 @@ yandex-map {
 
     background-color: @colorBacground;
 }
-.photo_discription {
+
+.info_style {
     display: none;
     position: fixed;
     padding: 7px;
@@ -225,20 +236,30 @@ yandex-map {
     color: @colorMainFont !important;
     background-color: @colorBacground !important;
     text-decoration: none;
-    top: 10%;
     left: 210%;
     z-index: 11;
+}
 
+.photo_discription_top {
+    top: 8%;
+    .info_style;
     .owner_name {
         color: darken(@colorMainFont, 5%) !important;
         text-decoration: none;
         cursor: pointer;
+    }
+
+    .photo_date {
+        color: darken(@colorMainFont, 5%) !important;
     }
 }
 
 .photo_in_result {
     cursor: pointer;
 }
+
+
+
 
 
 
