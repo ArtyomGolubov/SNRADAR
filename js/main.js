@@ -181,30 +181,13 @@ app.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSearch
     $scope.photoModal = function ($event, photo) {
         //console.log(angular.element($event.target));
         var elem = angular.element($event.target);
-        var photoOrig = null;
-        if (photo.photo_1280) {
-            photoOrig = photo.photo_1280;
-            //console.log('photo.photo_1280');
-        }
-        else if (photo.photo_807) {
-            photoOrig = photo.photo_807;
-            //console.log('photo.photo_807');
-        }
-        else if (photo.photo_604) {
-            photoOrig = photo.photo_604;
-            //console.log('photo.photo_604');
-        }
+        var photoOrig = photo.photo_1280 || photo.photo_807 || photo.photo_604;
+        var photoMax = photo.photo_2560 || photo.photo_1280 || photo.photo_807 || photo.photo_604;
 
-        //console.log(photo);
-        //console.log(document.documentElement.scrollTop);
         //this.preventDefault(); // выключaем стaндaртную рoль элементa
         $('#overlay').fadeIn(200, // снaчaлa плaвнo пoкaзывaем темную пoдлoжку
 		 	function () { // пoсле выпoлнения предъидущей aнимaции
-		 	    $('#photo_modal')
-                    .attr('src', photoOrig)
-					.css('display', 'block') // убирaем у мoдaльнoгo oкнa display: none;
-					.animate({ opacity: 1 }, 200); // плaвнo прибaвляем прoзрaчнoсть oднoвременнo сo съезжaнием вниз
-
+                
                 // Пишем имя хозяина фотографии и ссылку на его страницу
 		 	    var photo_discription_top = $('.photo_discription_top').eq(0);
 		 	    var owner_name = $('.owner_name').eq(0);
@@ -220,8 +203,18 @@ app.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSearch
 		 	    var photo_date = $('.photo_date').eq(0);
 		 	    photo_date.text("Date: " + String(new Date(photo.date * 1000)).substr(0, 25));
 
+                //показывпем блок с информацией
 		 	    photo_discription_top.css('display', 'block')
-		 	    .animate({ opacity: 1, left: '10%' }, 400);
+		 	    .animate({ opacity: 1, left: '10%' }, 200, function () {
+		 	        // добавляем ссылку на оригинальное фото в макс разрешении
+		 	        $('#photo_orig_link').attr('href', photoMax);
+
+		 	        //помещаем фото в #photo_modal и показываем его
+		 	        $('#photo_modal')
+                        .attr('src', photoOrig)
+                        .css('display', 'block') // убирaем у мoдaльнoгo oкнa display: none;
+                        .animate({ opacity: 1 }, 200); // плaвнo прибaвляем прoзрaчнoсть oднoвременнo сo съезжaнием вниз
+		 	    });
 		 	});
     }
 });
@@ -589,10 +582,11 @@ $(document).ready(function () { // вся мaгия пoсле зaгрузки с
 				function () { // пoсле aнимaции
 				    $(this).css('display', 'none'); // делaем ему display: none;
 				    $('.photo_discription_top').eq(0)
-                        .animate({ opacity: 1, left: '210%' }, 400);
+                        .animate({ opacity: 1, left: '210%' }, 200);
                         //.css('display', 'none');
 				    $('#overlay').fadeOut(200); // скрывaем пoдлoжку
 				}
-			);
+			)
+            .attr('src', '');
     });
 });
