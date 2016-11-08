@@ -209,7 +209,7 @@ yandex-map > ymaps {
   max-height: 80%;
   background-color: #3a4141;
 }
-@media only screen and (max-height: 769px) {
+@media only screen and (max-height: 481px) {
   #photo_modal {
     top: 15%;
   }
