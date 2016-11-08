@@ -149,7 +149,7 @@ yandex-map > ymaps {
   background-color: #3a4141;
   color: #fff;
 }
-#search {
+.search {
   margin-top: 20px;
   /*float: left;*/
 }

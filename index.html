@@ -26,7 +26,7 @@
 
     <script src="//vk.com/js/api/openapi.js" type="text/javascript"></script>
 </head>
-<body ng-app="MyApp" ng-controller="MapCtrl">
+<body ng-app="mainApp" ng-controller="MapCtrl">
 
     <div id="vk_api_transport"></div>
     <script type="text/javascript">
@@ -112,12 +112,10 @@
             </div>
         </div>
         <div class="container">
-            <div id="search">
-                <button ng-click="searchVk()" class="btn">search</button>
+            <div class="search">
+                <button ng-click="searchVk()" class="btn  btn-default">Поиск</button>
             </div>
-            <div id="search">
-                <button ng-click="searchVkContinue()" class="btn">searchVkContinue</button>
-            </div>
+            
             <hr />
 
             <div class="result_view">
@@ -128,7 +126,18 @@
                     <p ng-model="lastPhotoDate">Дата последней в списке фотографии: {{lastPhotoDate | date:'yyyy-MM-dd HH:mm:ss'}}</p>
                 </div>
                 <img ng-repeat="photo in resultList.photos" ng-model="photo" ng-src="{{photo.photo_130}}"
-                     class="photo_in_result" ng-click="photoModal($event, photo)" title="" />
+                     class="photo_in_result" ng-click="photoModal($event, photo)" title="photo" />
+
+                <hr />
+                <div class="search_info" ng-if="searchVkCont">
+                    <div class="search">
+                        <button ng-click="searchVkContinue()" class="btn btn-default">Загрузить еще фотографии</button>
+                    </div>
+                    <p ng-model="countOfPhotos">Количество фотографий: {{countOfPhotos}}</p>
+                    <p ng-model="countOfUsers">Количество пользователей: {{countOfUsers}}</p>
+                    <p ng-model="countOfGroups">Количество групп: {{countOfGroups}}</p>
+                    <p ng-model="lastPhotoDate">Дата последней в списке фотографии: {{lastPhotoDate | date:'yyyy-MM-dd HH:mm:ss'}}</p>
+                </div>
             </div>
         </div>
     </div>
