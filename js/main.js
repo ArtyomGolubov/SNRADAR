@@ -1,4 +1,5 @@
-﻿var mainApp = angular.module('mainApp', ['ymaps', 'ngCookies']);
+﻿/// <reference path="modules/mainApp/views/photoAll.html" />
+var mainApp = angular.module('mainApp', ['ymaps', 'ngCookies']);
 
 mainApp.config(function (ymapsConfig) {
     //ymapsConfig.fitMarkers = false;
@@ -146,7 +147,7 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSe
     
     $scope.$watch('resultList', function () {
         // нихрена не обновляет без таймаута
-        setTimeout(function () {
+        //setTimeout(function () {
             $scope.$applyAsync(function () {
                 console.log('resultList update', $scope.resultList.photos.length);
                 if (($scope.resultList.photos != undefined) && $scope.resultList.photos.length > 0) {
@@ -163,13 +164,15 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSe
                     $scope.searchVkCont = false;
                 }
             });
-        }, 2000);
+        //}, 2000);
     }, true);
-    
+
+    $scope.searchLoading = false;
 
     // жмем кнопку поиска
     $scope.searchVk = function () {
         console.info('------------ searchVk------------');
+        $scope.searchLoading = true;
 
         var dateStart = Date.parse($("#datetimepicker1").find('input').eq(0).val()) / 1000;
         var dateEnd = Date.parse($("#datetimepicker2").find('input').eq(0).val()) / 1000;
@@ -187,6 +190,8 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSe
             long: $scope.circleProp.coords[1],
             radius: $scope.radiuses[$scope.circleProp.radius].value
         }, function (res) {
+            console.log('pista: ', res);
+            $scope.searchLoading = false;
             $scope.$apply(function () {
                 $scope.resultList = serviceSearchVk.VKdata;
                 console.log('result: ', $scope.resultList);
@@ -197,6 +202,7 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSe
     // жмем кнопку продолжения поиска
     $scope.searchVkContinue = function () {
         console.info('------------ searchVkContinue------------');
+        $scope.searchLoading = true;
 
         var dateStart = Date.parse($("#datetimepicker1").find('input').eq(0).val()) / 1000;
         var dateEnd = $scope.resultList.lastPhotoDate;
@@ -214,6 +220,7 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSe
             long: $scope.circleProp.coords[1],
             radius: $scope.radiuses[$scope.circleProp.radius].value
         }, function (res) {
+            $scope.searchLoading = false;
             $scope.$apply(function () {
                 $scope.resultList = serviceSearchVk.VKdata;
                 console.log('result: ', $scope.resultList);
@@ -266,7 +273,6 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSe
 });
 
 mainApp.service('serviceSearchVk', function () {
-    
 
     /// counter
     this.counter = 0;
@@ -502,7 +508,7 @@ mainApp.service('serviceSearchVk', function () {
 
     // --------- GetOhotos2 ---------------------
     // Использование публичных методов
-    this.GetPhotos2 = function (parameters, succes) {
+    this.GetPhotos2 = function (parameters, succes, error) {
         if (parameters.searchContinue == 0) {
             
             self.VKdata = {
@@ -546,8 +552,15 @@ mainApp.service('serviceSearchVk', function () {
 
                 if (!data || !data.response || !data.response.items) {
                     console.error("VK returned some crap 1:", data);
+                    succes(self.VKdata);
                     return;
-                } else {
+                }
+                else {
+
+                    if (data.response.items.length == 0) {
+                        succes(self.VKdata);
+                    }
+
                     self.photos = data.response.items;
                     console.log('data.response.count = ' + data.response.count);
                     console.log('data.response.items.length = ' + data.response.items.length);
@@ -607,7 +620,9 @@ mainApp.service('serviceSearchVk', function () {
                                 self.VKdata.users = self.VKdata.users.concat(self.users);
                                 //packingPhotosInUsers(self.VKdata.users, self.photos);
                                 packingUsersInPhotos(self.photos, self.VKdata.users);
-                                succes(self.VKdata);
+                                if (self.groupsIds.length == 0) {
+                                    succes(self.VKdata);
+                                }
                                 self.users = [];
                             }
                         });
@@ -644,9 +659,7 @@ mainApp.service('serviceSearchVk', function () {
             }
         });
 
-        setTimeout(function () {
-            return self.VKdata;
-        }, 1000);
+        //return self.VKdata;
     }
 
     // --------- GetPhotos4 ------------------

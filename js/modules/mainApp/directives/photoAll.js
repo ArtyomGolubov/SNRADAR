@@ -1,29 +1,32 @@
-﻿mainApp.directive('photoAll', function () {
+﻿
+mainApp.directive('photoAll', function () {
     return {
-        replace: false,
-        restrict: 'A',
-        link: function(scope, element, attrs) {
+        replace: true,
+        restrict: 'AE',
+        link: function (scope, element, attrs) {
             scope.$watch('resultList', function (newValue, oldValue) {
-                element.html('');
 
-                var divCountPhoto = angular.element('<div>');
-                var divProgressPhoto = angular.element('<div>');
-                divProgressPhoto.attr('id', 'countOfPhotos');
-                element.append(divProgressPhoto);
-                divCountPhoto.append(angular.element('<h4>').text('Количество фотографий = ' + newValue.countPhotosRES));
-                element.append(divCountPhoto);
-
-                for (var i = 0; i < newValue.photos.length; i++) {
-                    var date = String(new Date(newValue.photos[i].date * 1000)).substr(0, 25);
-                    var a = angular.element('<a>');
-                    a.attr('href', newValue.photos[i].photo_604).attr('target', "_blank");
-                    a.append(angular.element('<img>').attr('src', newValue.photos[i].photo_75).css('height', '75px'))
-                        .attr('title', 'Дата : ' + date);
-                    element.append(a);
-                }
+                console.log(element);
             });
         },
 
-        templateUrl: 'modules/mainApp/views/photoAll.html' 
+        templateUrl: "js/modules/mainApp/views/photoAll.html"
+    }
+})
+.directive('imageInList', function () {
+    return {
+        replace: true,
+        restrict: 'A',
+
+        link: function (scope, element, attrs) {
+            scope.$watch('resultList', function (newValue, oldValue) {
+                // var title = moment(scope.photo.date * 1000).format('MMMM Do YYYY, h:mm:ss a')
+                var title = moment(scope.photo.date * 1000).format('YYYY-MM-DD HH:mm:ss');
+                element.attr('title', title);
+            });
+        },
+
+        templateUrl: "js/modules/mainApp/views/photo.html"
+        //template: '<img ng-model="photo" ng-src="{{photo.photo_130}}" class="photo_in_result" ng-click="photoModal($event, photo)" />'
     }
 });
