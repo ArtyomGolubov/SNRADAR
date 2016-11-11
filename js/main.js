@@ -9,7 +9,7 @@ mainApp.config(function (ymapsConfig) {
     ymapsConfig.markerOptions.preset = 'islands#darkgreenStretchyIcon';
 });
 
-mainApp.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSearchVk) {
+mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader, serviceSearchVk) {
 
 
     // cookies --------------------
@@ -121,6 +121,8 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSe
             // Определение координат объекта
             $scope.$applyAsync(function () {
                 $scope.circleProp.coords = thisPlacemark.geometry.getCoordinates();
+                $scope.circleProp.coords[0] = $scope.circleProp.coords[0].toFixed(4);
+                $scope.circleProp.coords[1] = $scope.circleProp.coords[1].toFixed(4);
                 //console.log($scope.circleProp.coords);
             });
             // и вывод их при щелчке на объект (метка/круг)
@@ -135,6 +137,105 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSe
         //-------------------
         /// ----  конец блока для добавления и работы с кругом ------
     });
+
+    $scope.coordsVisible = true;
+
+    // РАБОТА С ДАТОЙ --------------------------------------
+
+    $scope.dateInit = function () {
+        //Инициализация datetimepicker8 и datetimepicker9
+        // без $timeout хрен работает
+        $timeout(function () {
+
+            $scope.dateStart = '';
+            $scope.dateEnd = '';
+
+            $scope.$watch('dateStart', function () {
+                $scope.$applyAsync(function () {
+                    console.log($scope.dateStart);
+                });
+            })
+
+            console.log($scope.dateStart);
+
+            $("#datetimepicker1").datetimepicker({
+                locale: 'ru', defaultDate: new Date() - new Date(86400000), //new Date(2016, 1, 1, 00, 01),
+                //sideBySide: true,
+                icons: {
+                    time: "fa fa-clock-o",
+                    date: "fa fa-calendar",
+                    up: "fa fa-arrow-up",
+                    down: "fa fa-arrow-down"
+                }
+            });
+            $("#datetimepicker2").datetimepicker({
+                locale: 'ru', defaultDate: new Date(),
+                icons: {
+                    time: "fa fa-clock-o",
+                    date: "fa fa-calendar",
+                    up: "fa fa-arrow-up",
+                    down: "fa fa-arrow-down"
+                }
+            });
+            //При изменении даты в 1 datetimepicker, она устанавливается как минимальная для 2 datetimepicker
+            $("#datetimepicker1").on("dp.change", function (e) {
+                $("#datetimepicker2").datetimepicker({ MinDate: e.date });
+            });
+            //При изменении даты в 2 datetimepicker, она устанавливается как максимальная для 1 datetimepicker
+            $("#datetimepicker2").on("dp.change", function (e) {
+                $("#datetimepicker1").datetimepicker({ MaxDate: e.date });
+            });
+
+            //
+            $scope.$applyAsync(function () {
+                    $scope.dateStart = $("#datetimepicker1 input").val();
+                    console.log($scope.dateStart);
+                    $scope.dateEnd = $("#datetimepicker2 input").val();
+                    console.log($scope.dateEnd);
+            });
+        }, 1000);
+    }
+
+    // Привязка datepicker, ибо я уже заепался пытаться прикрутить через Angular
+    jQuery(function ($) {
+        $(document).mouseup(function (e) { // событие клика по веб-документу
+            var div = $("#datetimepicker1 input, #datetimepicker2 input"); // тут указываем ID элемента
+            if (!div.is(e.target) // если клик был не по нашему блоку
+                && div.has(e.target).length === 0) { // и не по его дочерним элементам
+                
+                $scope.$applyAsync(function () {
+                    if (div.is(("#datetimepicker1 input"))) {
+                        $scope.dateStart = $("#datetimepicker1 input").val();
+                        console.log($scope.dateStart);
+                    }
+                    if (div.is(("#datetimepicker2 input"))) {
+                        $scope.dateEnd = $("#datetimepicker2 input").val();
+                        console.log($scope.dateEnd);
+                    }
+                });
+            }
+        });
+    });
+
+    // КОНЕЦ С ДАТОЙ -------------------------------------------
+
+    // работа с меню на карте
+    $scope.menuInMapToggle = function () {
+        var menu_btn = $('#menu_in_map');
+        
+        var menu = $('.search_opt_1.in_map').eq(0);
+        if (menu.is(':hidden')) {
+            menu_btn.css('border-top-left-radius', '0px');
+            menu_btn.css('border-bottom-left-radius', '0px');
+            menu.show(200);
+        }
+        else {
+            menu_btn.css('border-top-left-radius', '3px');
+            menu_btn.css('border-bottom-left-radius', '3px');
+            menu.hide(200);
+        }
+    }
+    //-----------------------
     
     ///////  ПОИСК ///////
     //---------------------------------------------------//
@@ -150,7 +251,7 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, ymapsLoader, serviceSe
         //setTimeout(function () {
             $scope.$applyAsync(function () {
                 console.log('resultList update', $scope.resultList.photos.length);
-                if (($scope.resultList.photos != undefined) && $scope.resultList.photos.length > 0) {
+                if (($scope.resultList.photos !== undefined) && $scope.resultList.photos.length > 0) {
                     $scope.searchVkCont = true;
 
                     $scope.countOfPhotos = $scope.resultList.photos.length;
@@ -330,7 +431,7 @@ mainApp.service('serviceSearchVk', function () {
         for (i = 0; i < groups.length; i++) {
             groups[i].photos = [];
             for (k = 0; k < photos.length; k++) {
-                if (Math.abs(photos[k].owner_id) == groups[i].id) {
+                if (Math.abs(photos[k].owner_id) === groups[i].id) {
                     groups[i].photos.push(photos[k]);
                 }
             }
@@ -557,7 +658,7 @@ mainApp.service('serviceSearchVk', function () {
                 }
                 else {
 
-                    if (data.response.items.length == 0) {
+                    if (data.response.items.length === 0) {
                         succes(self.VKdata);
                     }
 
@@ -590,7 +691,7 @@ mainApp.service('serviceSearchVk', function () {
                     // делим массив на части
                     // хз чего, но когда примерно usersIds.length больше 100, то запрос не проходит
                     if (self.usersIds.length > 100) {
-                        var usersIdsSplitArr = chunkArray(self.usersIds, 100);
+                        usersIdsSplitArr = chunkArray(self.usersIds, 100);
                     }
                     else {
                         usersIdsSplitArr = [self.usersIds];
@@ -620,7 +721,7 @@ mainApp.service('serviceSearchVk', function () {
                                 self.VKdata.users = self.VKdata.users.concat(self.users);
                                 //packingPhotosInUsers(self.VKdata.users, self.photos);
                                 packingUsersInPhotos(self.photos, self.VKdata.users);
-                                if (self.groupsIds.length == 0) {
+                                if (self.groupsIds.length === 0) {
                                     succes(self.VKdata);
                                 }
                                 self.users = [];
@@ -815,3 +916,37 @@ $(document).ready(function () { // вся мaгия пoсле зaгрузки с
             .attr('src', '');
     });
 });
+
+
+$(document).ready(function () {
+    //Menu "Hamburger" Icon Animations
+    $('#nav-icon1,#nav-icon2,#nav-icon3,#nav-icon4').click(function () {
+        $(this).toggleClass('open');
+    });
+
+    // .menu_tooltip
+    //presentation
+    setTimeout(function () {
+    $('.menu_tooltip').show('fast')
+        .animate({ color: '#3A4141' }, 2500)
+        .animate({ color: '#fff', backgroundColor: '#3A4141' }, 2500)
+        .hide('fast');
+    }, 3000);
+    //---
+    $('.date_info').hover(function () {
+        setTimeout(function () {
+            $('.menu_tooltip').fadeOut(200);
+        }, 1000);
+    });
+
+    $('.date_info').mouseover(function () {
+        setTimeout(function () {
+            $('.menu_tooltip').fadeIn(200);
+        }, 1000);
+    });
+
+    $('.menu_tooltip').click(function () {
+        $('.menu_tooltip').queue("fx", []).hide('fast');
+    });
+});
+
