@@ -149,6 +149,7 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
 
             $scope.dateStart = '';
             $scope.dateEnd = '';
+            $scope.dateTmp = '';
 
             $scope.$watch('dateStart', function () {
                 $scope.$applyAsync(function () {
@@ -206,11 +207,11 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
                 $scope.$applyAsync(function () {
                     if (div.is(("#datetimepicker1 input"))) {
                         $scope.dateStart = $("#datetimepicker1 input").val();
-                        console.log($scope.dateStart);
+                        //console.log($scope.dateStart);
                     }
                     if (div.is(("#datetimepicker2 input"))) {
                         $scope.dateEnd = $("#datetimepicker2 input").val();
-                        console.log($scope.dateEnd);
+                        //console.log($scope.dateEnd);
                     }
                 });
             }
@@ -275,6 +276,7 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
         console.info('------------ searchVk------------');
         $scope.searchLoading = true;
 
+        $scope.dateTmp = Date.parse($("#datetimepicker1").find('input').eq(0).val()) / 1000;
         var dateStart = Date.parse($("#datetimepicker1").find('input').eq(0).val()) / 1000;
         var dateEnd = Date.parse($("#datetimepicker2").find('input').eq(0).val()) / 1000;
 
@@ -476,136 +478,6 @@ mainApp.service('serviceSearchVk', function () {
         }
         return tmp;
     }
-
-    //// --------- GetOhotos1 ---------------------
-    //// Использование публичных методов
-    //this.GetPhotos1 = function (parameters, succes) {
-    //    var usersIds = [];
-    //    var groupsIds = [];
-
-    //    var users = [];
-    //    var groups = [];
-    //    var photos = [];
-    //    var VKdata = {
-    //        users: users,
-    //        groups: groups,
-    //        photos: photos
-    //    };
-
-    //    $.ajax({
-    //        url: "https://api.vk.com/method/photos.search",
-    //        data: {
-    //            count: parameters.count,
-    //            start_time: parameters.start_time,
-    //            end_time: parameters.end_time,
-    //            lat: parameters.lat,
-    //            long: parameters.long,
-    //            radius: parameters.radius,
-    //            fields: 'owner_id,photo_130,date',
-    //            v: "5.26",
-    //        },
-    //        dataType: "jsonp",
-    //        success: function (data) {
-    //            var i;
-
-    //            if (!data || !data.response || !data.response.items) {
-    //                console.error("VK returned some crap 1:", data);
-    //                return;
-    //            } else {
-    //                photos = data.response.items;
-    //                console.log('data.response.count = ' + data.response.count);
-    //                console.log('data.response.items.length = ' + data.response.items.length);
-    //                VKdata.photos = photos;
-    //                console.log(photos[photos.length - 1].date);
-    //                VKdata.lastPhotoDate = VKdata.photos[photos.length - 1].date;
-    //                VKdata.countPhotosVK = data.response.count;
-    //                VKdata.countPhotosRES = data.response.items.length;
-    //            }
-    //            for (i = 0; i < data.response.items.length; i++) {
-    //                if (data.response.items[i].owner_id > 0) {
-    //                    usersIds.push(data.response.items[i].owner_id);
-    //                } else {
-    //                    groupsIds.push(Math.abs(data.response.items[i].owner_id));
-    //                }
-    //            }
-    //            usersIds = getUniqueArr(usersIds);
-    //            groupsIds = getUniqueArr(groupsIds);
-    //            //console.log('usersIds : ', usersIds);
-    //            //console.log('groupsIds : ', groupsIds);
-
-    //            var usersIdsSplitArr = [];
-    //            if (usersIds.length > 0) {
-    //                // делим массив на части
-    //                // хз чего, но когда примерно usersIds.length больше 100, то запрос не проходит
-    //                if (usersIds.length > 100) {
-    //                    var usersIdsSplitArr = chunkArray(usersIds, 100);
-    //                }
-    //                else {
-    //                    usersIdsSplitArr = [usersIds];
-    //                }
-
-    //                console.log('usersIdsSplitArr : ', usersIdsSplitArr)
-
-    //                for (var j = 0; j < usersIdsSplitArr.length; j++) {
-    //                    $.ajax({
-    //                        url: "https://api.vk.com/method/users.get",
-    //                        data: {
-    //                            user_ids: usersIdsSplitArr[j],
-    //                            fields: 'nickname,photo_max_orig,screen_name,maiden_name',
-    //                            v: "5.26",
-    //                        },
-    //                        dataType: "jsonp",
-    //                        success: function (data) {
-    //                            var i;
-
-    //                            if (!data || !data.response) {
-    //                                console.error("VK returned some crap 2:", data);
-    //                                return;
-    //                            }
-    //                            for (i = 0; i < data.response.length; i++) {
-    //                                users.push(data.response[i]);
-    //                            }
-    //                            packingPhotosInUsers(users, photos);
-    //                            packingUsersInPhotos(photos, users);
-    //                            succes(VKdata);
-    //                            VKdata.users = users;
-    //                        }
-    //                    });
-    //                }
-    //            }
-
-    //            if (groupsIds.length > 0) {
-    //                $.ajax({
-    //                    url: "https://api.vk.com/method/groups.getById",
-    //                    data: {
-    //                        group_ids: groupsIds,
-    //                        fields: 'description',
-    //                        v: "5.26",
-    //                    },
-    //                    dataType: "jsonp",
-    //                    success: function (data) {
-    //                        var i;
-
-    //                        if (!data || !data.response) {
-    //                            console.error("VK returned some crap 3:", data);
-    //                            return;
-    //                        }
-    //                        for (i = 0; i < data.response.length; i++) {
-    //                            groups.push(data.response[i]);
-    //                        }
-    //                        packingPhotosInGroups(groups, photos);
-    //                        packingGroupsInPhotos(photos, groups);
-    //                        VKdata.groups = groups;
-    //                    }
-    //                });
-    //            }
-    //        }
-    //    });
-
-    //    setTimeout(function () {
-    //        return VKdata;
-    //    }, 1000);
-    //}
 
     // --------- GetOhotos2 ---------------------
     // Использование публичных методов
@@ -810,7 +682,6 @@ mainApp.service('serviceSearchVk', function () {
                 //console.log("data:", data);
 
                 if (VKdata.photos.length > 1) {
-                    //console.log("data.response[0].count : ", data.response[0].count);
 
                     DateLastPhoto = VKdata.photos[VKdata.photos.length - 1].date;
                     //console.log("DateLastPhoto:", DateLastPhoto);
@@ -818,7 +689,6 @@ mainApp.service('serviceSearchVk', function () {
                     //console.log("VKdata.photos.length:", VKdata.photos.length);
 
                     GetUsersAndGroupsIds();
-                    //console.log("VKdata:", VKdata);
                     GetUsers(VKdata.ids, succes);
 
                     //succes(VKdata);
@@ -927,22 +797,22 @@ $(document).ready(function () {
     // .menu_tooltip
     //presentation
     setTimeout(function () {
-    $('.menu_tooltip').show('fast')
-        .animate({ color: '#3A4141' }, 2500)
-        .animate({ color: '#fff', backgroundColor: '#3A4141' }, 2500)
-        .hide('fast');
+    $('.menu_tooltip').show('slow')
+        .animate({ color: '#3A4141' }, 3500)
+        .animate({ color: '#fff', backgroundColor: '#3A4141' }, 3500)
+        .hide('slow');
     }, 3000);
     //---
-    $('.date_info').hover(function () {
-        setTimeout(function () {
+    $('#search_opt').hover(function () {
+        //setTimeout(function () {
             $('.menu_tooltip').fadeOut(200);
-        }, 1000);
+        //}, 1000);
     });
 
-    $('.date_info').mouseover(function () {
-        setTimeout(function () {
+    $('#search_opt').mouseover(function () {
+        //setTimeout(function () {
             $('.menu_tooltip').fadeIn(200);
-        }, 1000);
+        //}, 1000);
     });
 
     $('.menu_tooltip').click(function () {

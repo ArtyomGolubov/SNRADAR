@@ -7,6 +7,7 @@ mainApp.directive('photoAll', function () {
             scope.$watch('resultList', function (newValue, oldValue) {
 
                 console.log(element);
+                
             });
         },
 
@@ -23,6 +24,20 @@ mainApp.directive('photoAll', function () {
                 // var title = moment(scope.photo.date * 1000).format('MMMM Do YYYY, h:mm:ss a')
                 var title = moment(scope.photo.date * 1000).format('YYYY-MM-DD HH:mm:ss');
                 element.attr('title', title);
+
+                console.log('---scope.photo.id = ' + scope.photo.id + 'scope.photo.photo_130 = ' + scope.photo.photo_130);
+
+                var span = $('<div>');
+                span.text(moment(scope.dateTmp * 1000).format('YYYY-MM-DD HH:mm:ss') + ' - ' + title).addClass('split_span_date_info');
+                if (scope.resultList.photos.length > 0) {
+                    if (scope.resultList.photos[scope.resultList.photos.length - 1].photo_130 === scope.photo.photo_130) {
+                        console.log('scope.photo.id = ' + scope.photo.id + 'scope.photo.photo_130 = ' + scope.photo.photo_130);
+                        element.after(span);
+                    }
+                }
+                //else {
+                //    console.log('scope.resultList.photos.length = ', scope.resultList.photos.length);
+                //}
             });
         },
 
