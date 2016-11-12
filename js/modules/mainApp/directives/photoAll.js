@@ -1,7 +1,7 @@
 ﻿
 mainApp.directive('photoAll', function () {
     return {
-        replace: true,
+        replace: false,
         restrict: 'AE',
         link: function (scope, element, attrs) {
             scope.$watch('resultList', function (newValue, oldValue) {
@@ -22,16 +22,21 @@ mainApp.directive('photoAll', function () {
         link: function (scope, element, attrs) {
             scope.$watch('resultList', function (newValue, oldValue) {
                 // var title = moment(scope.photo.date * 1000).format('MMMM Do YYYY, h:mm:ss a')
-                var title = moment(scope.photo.date * 1000).format('YYYY-MM-DD HH:mm:ss');
+                var title = moment(scope.photo.date * 1000).format('YYYY-MM-DD  HH:mm:ss');
                 element.attr('title', title);
 
-                console.log('---scope.photo.id = ' + scope.photo.id + 'scope.photo.photo_130 = ' + scope.photo.photo_130);
+                //console.log('---scope.photo.id = ' + scope.photo.id + 'scope.photo.photo_130 = ' + scope.photo.photo_130);
 
                 var span = $('<div>');
-                span.text(moment(scope.dateTmp * 1000).format('YYYY-MM-DD HH:mm:ss') + ' - ' + title).addClass('split_span_date_info');
+                
                 if (scope.resultList.photos.length > 0) {
+                    if (scope.counter === 0) {
+                        scope.dateTmp = scope.resultList.photos[0].date;
+                        //span.text(moment(scope.dateTmp * 1000).format('YYYY-MM-DD HH:mm:ss') + ' - ' + title).addClass('split_span_date_info');
+                    }
                     if (scope.resultList.photos[scope.resultList.photos.length - 1].photo_130 === scope.photo.photo_130) {
-                        console.log('scope.photo.id = ' + scope.photo.id + 'scope.photo.photo_130 = ' + scope.photo.photo_130);
+                        span.text(moment(scope.dateTmp * 1000).format('YYYY-MM-DD  HH:mm:ss') + '  -  ' + title).addClass('split_span_date_info');
+                        //console.log('scope.photo.id = ' + scope.photo.id + 'scope.photo.photo_130 = ' + scope.photo.photo_130);
                         element.after(span);
                     }
                 }

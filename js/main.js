@@ -270,13 +270,15 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
     }, true);
 
     $scope.searchLoading = false;
+    $scope.counter = 0;
 
     // жмем кнопку поиска
     $scope.searchVk = function () {
         console.info('------------ searchVk------------');
         $scope.searchLoading = true;
+        $scope.counter = 0;
 
-        $scope.dateTmp = Date.parse($("#datetimepicker1").find('input').eq(0).val()) / 1000;
+        //$scope.dateTmp = Date.parse($("#datetimepicker1").find('input').eq(0).val()) / 1000;
         var dateStart = Date.parse($("#datetimepicker1").find('input').eq(0).val()) / 1000;
         var dateEnd = Date.parse($("#datetimepicker2").find('input').eq(0).val()) / 1000;
 
@@ -306,7 +308,9 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
     $scope.searchVkContinue = function () {
         console.info('------------ searchVkContinue------------');
         $scope.searchLoading = true;
+        $scope.counter++;
 
+        $scope.dateTmp = $scope.resultList.lastPhotoDate;
         var dateStart = Date.parse($("#datetimepicker1").find('input').eq(0).val()) / 1000;
         var dateEnd = $scope.resultList.lastPhotoDate;
 

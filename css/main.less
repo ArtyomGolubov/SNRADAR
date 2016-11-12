@@ -157,9 +157,9 @@ yandex-map {
         right: 53px;
         margin-left: 20px;
         z-index: 4;
-        border-bottom-left-radius: 3px;
-        border-bottom-right-radius: 3px;
-        border-top-left-radius: 3px;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border-top-left-radius: 5px;
         padding: 10px;
         background-color: rgba(58, 65, 65, 0.8);
         font-size: 14px;
@@ -296,6 +296,7 @@ yandex-map {
 }
 
 .result_view {
+    //border-left: 1px solid darken(@colorMainFont, 40%);
     .search_info {
         margin-bottom: 10px;
         color: @colorMainFont;
@@ -514,8 +515,16 @@ yandex-map {
     border-bottom-right-radius: 5px;
     border-top: 0px;
     margin: 0px 0 10px 0;
-    width: 300px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
+
+.photo_list {
+    border-left: 1px solid darken(@colorMainFont, 40%);
+}
+
+
 
 
 
