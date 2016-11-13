@@ -537,6 +537,60 @@ yandex-map {
     border-left: 1px solid darken(@colorMainFont, 40%);
 }
 
+/**
+ * go to top - (_layout.scss)
+ * ------------------------------------------------------------------- 
+ */
+#go-top {
+	position: fixed;
+	bottom: 0;
+	right: 20px;
+    bottom: 20px;
+	z-index: 600;
+	display: none;
+
+    @media only screen and (max-width : 769px) {
+        right: 10px;
+        bottom: 10px;
+    }
+}
+#go-top a {
+	text-decoration: none;
+	border: 0 none;
+	display: block;
+	height: 6.6rem;
+	width: 6rem;
+	line-height: 6.6rem;
+	text-align: center;
+	background: rgba(0, 0, 0, 0.50);
+	color: @colorMainFont;
+    border-radius: 4px;
+	text-align: center;
+	text-transform: uppercase;
+	-moz-transition: all 0.3s ease-in-out;
+	-o-transition: all 0.3s ease-in-out;
+	-webkit-transition: all 0.3s ease-in-out;
+	-ms-transition: all 0.3s ease-in-out;
+	transition: all 0.3s ease-in-out;
+
+    @media only screen and (max-width : 769px) {
+        height: 40px;
+	    width: 38px;
+    }
+}
+#go-top a i {
+	font-size: 1.6rem;
+	line-height: inherit;
+    color: @colorBacground !important;
+    @media only screen and (max-width : 769px) {
+        top: -12px;
+    }
+}
+#go-top a:hover {
+	background: @colorMainFont;
+}
+
+
 
 
 

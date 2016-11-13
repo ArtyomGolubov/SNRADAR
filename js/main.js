@@ -298,7 +298,7 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
 
         $scope.response = serviceSearchVk.GetPhotos2({
             searchContinue: 0,
-            count: 100,
+            count: 1000,
             offset: 0,
             start_time: dateStart,
             end_time: dateEnd,
@@ -330,7 +330,7 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
 
         $scope.response = serviceSearchVk.GetPhotos2({
             searchContinue: 1,
-            count: 100,
+            count: 1000,
             offset: 0,
             start_time: dateStart,
             end_time: dateEnd,
@@ -898,4 +898,106 @@ $(document).ready(function () {
         $('.menu_tooltip').queue("fx", []).hide('fast');
     });
 });
+
+
+// Часть для плавного скроллинга и для навигационного меню.
+(function ($) {
+    console.log('function ($)');
+
+    /*---------------------------------------------------- */
+    /* Smooth Scrolling
+    ------------------------------------------------------ */
+    $('.smoothscroll').on('click', function (e) {
+        console.log('Smooth Scrolling 0');
+        e.preventDefault();
+        console.log('Smooth Scrolling 1');
+
+        var target = this.hash,
+            $target = $(target);
+        console.log(e.hash);
+
+        $('html, body').stop().animate({
+            'scrollTop': $target.offset().top - 80
+        }, 800, 'swing', function () {
+            window.location.hash = target;
+        });
+        console.log('Smooth Scrolling 2');
+    });
+
+    /*-----------------------------------------------------*/
+    /* Navigation Menu
+   ------------------------------------------------------ */
+    var toggleButton = $('.menu-toggle'),
+        nav = $('.main-navigation');
+
+    // toggle button
+    toggleButton.on('click', function (e) {
+
+        e.preventDefault();
+        toggleButton.toggleClass('is-clicked');
+        nav.slideToggle();
+
+    });
+
+    // nav items
+    nav.find('li a').on("click", function () {
+
+        // update the toggle button 		
+        toggleButton.toggleClass('is-clicked');
+        // fadeout the navigation panel
+        nav.fadeOut();
+
+    });
+
+
+    /*---------------------------------------------------- */
+    /* Highlight the current section in the navigation bar
+  	------------------------------------------------------ */
+    var sections = $("section"),
+	navigation_links = $("#main-nav-wrap li a");
+
+
+    sections.waypoint({
+
+        handler: function (direction) {
+            //console.log('Highlight the current section in the navigation bar');
+            var active_section;
+
+            active_section = $('section#' + this.element.id);
+
+            if (direction === "up") active_section = active_section.prev();
+
+            var active_link = $('#main-nav-wrap a[href="#' + active_section.attr("id") + '"]');
+
+            navigation_links.parent().removeClass("current");
+            active_link.parent().addClass("current");
+            //console.log(active_section);
+        },
+
+        offset: '25%'
+    });
+
+    /*----------------------------------------------------- */
+    /* Back to top
+   ------------------------------------------------------- */
+    var pxShow = 300; // height on which the button will show
+    var fadeInTime = 400; // how slow/fast you want the button to show
+    var fadeOutTime = 400; // how slow/fast you want the button to hide
+    var scrollSpeed = 300; // how slow/fast you want the button to scroll to top. can be a value, 'slow', 'normal' or 'fast'
+
+    // Show or hide the sticky footer button
+    jQuery(window).scroll(function () {
+
+        if (!($("#header-search").hasClass('is-visible'))) {
+
+            if (jQuery(window).scrollTop() >= pxShow) {
+                jQuery("#go-top").fadeIn(fadeInTime);
+            } else {
+                jQuery("#go-top").fadeOut(fadeOutTime);
+            }
+
+        }
+
+    });
+})(jQuery);
 
