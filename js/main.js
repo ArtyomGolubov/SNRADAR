@@ -247,27 +247,38 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
         photos: []
     };
     
-    $scope.$watch('resultList', function () {
-        // нихрена не обновляет без таймаута
-        //setTimeout(function () {
+    // <обновления>
+    $scope.$watch('resultList.photos', function () {
             $scope.$applyAsync(function () {
-                console.log('resultList update', $scope.resultList.photos.length);
+                console.log('resultList.photos update', $scope.resultList.photos.length);
                 if (($scope.resultList.photos !== undefined) && $scope.resultList.photos.length > 0) {
                     $scope.searchVkCont = true;
 
                     $scope.countOfPhotos = $scope.resultList.photos.length;
-                    $scope.countOfUsers = $scope.resultList.users.length;
-                    $scope.countOfGroups = $scope.resultList.groups.length;
-                    console.log('$scope.resultList.lastPhoto.date', $scope.resultList.lastPhoto.date);
+
+                    //console.log('$scope.resultList.lastPhoto.date', $scope.resultList.lastPhoto.date);
                     $scope.lastPhoto = $scope.resultList.lastPhoto;
                 }
                 else {
                     $scope.searchVkCont = false;
                 }
             });
-        //}, 2000);
-    }, true);
+    });
 
+    $scope.$watch('resultList.users', function () {
+        $scope.$applyAsync(function () {
+            console.log('resultList.users update', $scope.resultList.users.length);
+            $scope.countOfUsers = $scope.resultList.users.length;
+        });
+    });
+
+    $scope.$watch('resultList.groups', function () {
+        $scope.$applyAsync(function () {
+            console.log('resultList.groups update', $scope.resultList.groups.length);
+            $scope.countOfGroups = $scope.resultList.groups.length;
+        });
+    });
+    // </обновления>
     $scope.searchLoading = false;
     $scope.searchCounter = 0;
     $scope.photoTmpFirst = {};
@@ -287,7 +298,7 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
 
         $scope.response = serviceSearchVk.GetPhotos2({
             searchContinue: 0,
-            count: 200,
+            count: 100,
             offset: 0,
             start_time: dateStart,
             end_time: dateEnd,
@@ -314,12 +325,12 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
         var dateStart = Date.parse($("#datetimepicker1").find('input').eq(0).val()) / 1000;
         var dateEnd = $scope.resultList.lastPhoto.date;
 
-        console.info('dateStart: ', new Date(dateStart * 1000));
-        console.info('dateEnd: ', new Date(dateEnd * 1000));
+        //console.info('dateStart: ', new Date(dateStart * 1000));
+        //console.info('dateEnd: ', new Date(dateEnd * 1000));
 
         $scope.response = serviceSearchVk.GetPhotos2({
             searchContinue: 1,
-            count: 200,
+            count: 100,
             offset: 0,
             start_time: dateStart,
             end_time: dateEnd,
@@ -399,11 +410,35 @@ mainApp.service('serviceSearchVk', function () {
         photosTmp: new Array(),
         ids: {
             usersIds: new Array(),
-            groupsIds: new Array()
+            groupsIds: new Array(),
         }
     };
 
     var self = this;
+
+    function addRange(OldArr, NewArr) {
+        var OldArrSize = OldArr.length;
+        var NewArrSize = NewArr.length;
+
+        for (var j = 0; j < NewArrSize; j++) {
+            OldArr.push(NewArr[j]);
+        }
+        return OldArr;
+    }
+
+    function getUniqueItemsInNewArr(OldArr, NewArr) {
+        var OldArrSize = OldArr.length;
+        var NewArrSize = NewArr.length;
+        var indexOfArr = [];
+
+        for (var j = 0; j < NewArrSize; j++) {
+            // look for same thing in new array
+            if (OldArr.indexOf(NewArr[j]) == -1) {
+                indexOfArr.push(NewArr[j]);
+            }
+        }
+        return indexOfArr;
+    }
 
     getUniqueArr = function (arr) {
         var i = 0,
@@ -492,7 +527,11 @@ mainApp.service('serviceSearchVk', function () {
             self.VKdata = {
                 users: [],
                 groups: [],
-                photos: []
+                photos: [],
+                ids: {
+                    usersIds: new Array(),
+                    groupsIds: new Array(),
+                }
             };
             console.info('self.VKdata searchContinue: ', self.VKdata);
         }
@@ -504,8 +543,9 @@ mainApp.service('serviceSearchVk', function () {
         self.users = [];
         self.groups = [];
         self.VKdata.photosTmp = [];
+        self.photos = [];
 
-        console.info('self.counter: ', self.counter++);
+        //console.info('self.counter: ', self.counter++);
 
         $.ajax({
             url: "https://api.vk.com/method/photos.search",
@@ -524,7 +564,7 @@ mainApp.service('serviceSearchVk', function () {
                 console.warn('error data', data);
             },
             success: function (data) {
-                console.warn('success data', data);
+                //console.warn('success data', data);
 
                 var i;
 
@@ -539,31 +579,52 @@ mainApp.service('serviceSearchVk', function () {
                         succes(self.VKdata);
                     }
 
-                    self.VKdata.photosTmp = data.response.items;
+                    self.photos = data.response.items;
                     console.log('data.response.count = ' + data.response.count);
                     console.log('data.response.items.length = ' + data.response.items.length);
-                    self.VKdata.photos = self.VKdata.photos.concat(self.VKdata.photosTmp);
-                    //console.log(self.VKdata.photosTmp[self.VKdata.photosTmp.length - 1].date);
-                    //console.log(self.VKdata);
-                    if (self.VKdata.photosTmp.length > 0) {
-                        self.VKdata.lastPhoto = self.VKdata.photosTmp[self.VKdata.photosTmp.length - 1];
+                    self.VKdata.photos = self.VKdata.photos.concat(self.photos);
+
+                    if (self.photos.length > 0) {
+                        self.VKdata.lastPhoto = self.photos[self.photos.length - 1];
                     }
                     self.VKdata.countPhotosVK = data.response.count;
                     self.VKdata.countPhotosRES = data.response.items.length;
                 }
-                for (i = 0; i < data.response.items.length; i++) {
-                    if (data.response.items[i].owner_id > 0) {
-                        self.usersIds.push(data.response.items[i].owner_id);
+                //for (i = 0; i < data.response.items.length; i++) {
+                //    if (data.response.items[i].owner_id > 0) {
+                //        self.usersIds.push(data.response.items[i].owner_id);
+                //    } else {
+                //        self.groupsIds.push(Math.abs(data.response.items[i].owner_id));
+                //    }
+                //}
+                for (i = 0; i < self.photos.length; i++) {
+                    if (self.photos[i].owner_id > 0) {
+                        self.usersIds.push(self.photos[i].owner_id);
                     } else {
-                        self.groupsIds.push(Math.abs(data.response.items[i].owner_id));
+                        self.groupsIds.push(Math.abs(self.photos[i].owner_id));
                     }
                 }
                 self.usersIds = getUniqueArr(self.usersIds);
                 self.groupsIds = getUniqueArr(self.groupsIds);
+
+                // фильтрую элементы, которых еще нет в основных массивах
+                // (отбираю айдишники новых пользователей и новых групп)
+                if (self.usersIds.length != 1) { // проверка для того чтобы был вызван succes, а также для определения конца поиска
+                    self.usersIds = getUniqueItemsInNewArr(self.VKdata.ids.usersIds, self.usersIds);
+                }
+                if (self.groupsIds.length != 1) { // проверка для того чтобы был вызван succes, а также для определения конца поиска
+                    self.groupsIds = getUniqueItemsInNewArr(self.VKdata.ids.groupsIds, self.groupsIds);
+                }
+
+                // добавляю айдишники новых пользователей и новых групп в основные массивы айдшников
+                self.VKdata.ids.usersIds = addRange(self.VKdata.ids.usersIds, self.usersIds);
+                self.VKdata.ids.groupsIds = addRange(self.VKdata.ids.groupsIds, self.groupsIds);
                 //console.log('usersIds : ', usersIds);
                 //console.log('groupsIds : ', groupsIds);
 
                 var usersIdsSplitArr = [];
+                var groupsIdsSplitArr = [];
+
                 if (self.usersIds.length > 0) {
                     // делим массив на части
                     // хз чего, но когда примерно usersIds.length больше 100, то запрос не проходит
@@ -596,8 +657,8 @@ mainApp.service('serviceSearchVk', function () {
                                     self.users.push(data.response[i]);
                                 }
                                 self.VKdata.users = self.VKdata.users.concat(self.users);
-                                //packingPhotosInUsers(self.VKdata.users, self.VKdata.photosTmp);
-                                packingUsersInPhotos(self.VKdata.photosTmp, self.VKdata.users);
+                                packingPhotosInUsers(self.VKdata.users, self.photos);
+                                packingUsersInPhotos(self.VKdata.photos, self.users);
                                 if (self.groupsIds.length === 0) {
                                     succes(self.VKdata);
                                 }
@@ -608,31 +669,44 @@ mainApp.service('serviceSearchVk', function () {
                 }
 
                 if (self.groupsIds.length > 0) {
-                    $.ajax({
-                        url: "https://api.vk.com/method/groups.getById",
-                        data: {
-                            group_ids: self.groupsIds,
-                            fields: 'description',
-                            v: "5.26",
-                        },
-                        dataType: "jsonp",
-                        success: function (data) {
-                            var i;
+                    // делим массив на части
+                    // хз чего, но когда примерно groupsIds.length больше 100, то запрос не проходит
+                    if (self.groupsIds.length > 100) {
+                        groupsIdsSplitArr = chunkArray(self.groupsIds, 100);
+                    }
+                    else {
+                        groupsIdsSplitArr = [self.groupsIds];
+                    }
 
-                            if (!data || !data.response) {
-                                console.error("VK returned some crap 3:", data);
-                                return;
+                    console.log('groupsIdsSplitArr : ', groupsIdsSplitArr)
+
+                    for (var j = 0; j < groupsIdsSplitArr.length; j++) {
+                        $.ajax({
+                            url: "https://api.vk.com/method/groups.getById",
+                            data: {
+                                group_ids: groupsIdsSplitArr[j],
+                                fields: 'description',
+                                v: "5.26",
+                            },
+                            dataType: "jsonp",
+                            success: function (data) {
+                                var i;
+
+                                if (!data || !data.response) {
+                                    console.error("VK returned some crap 3:", data);
+                                    return;
+                                }
+                                for (i = 0; i < data.response.length; i++) {
+                                    self.groups.push(data.response[i]);
+                                }
+                                self.VKdata.groups = self.VKdata.groups.concat(self.groups);
+                                packingPhotosInGroups(self.VKdata.groups, self.photos);
+                                packingGroupsInPhotos(self.VKdata.photos, self.groups);
+                                succes(self.VKdata);
+                                self.groups = [];
                             }
-                            for (i = 0; i < data.response.length; i++) {
-                                self.groups.push(data.response[i]);
-                            }
-                            self.VKdata.groups = self.VKdata.groups.concat(self.groups);
-                            //packingPhotosInGroups(self.VKdata.groups, self.VKdata.photosTmp);
-                            packingGroupsInPhotos(self.VKdata.photosTmp, self.VKdata.groups);
-                            succes(self.VKdata);
-                            self.groups = [];
-                        }
-                    });
+                        });
+                    }
                 }
             }
         });
