@@ -258,9 +258,8 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
                     $scope.countOfPhotos = $scope.resultList.photos.length;
                     $scope.countOfUsers = $scope.resultList.users.length;
                     $scope.countOfGroups = $scope.resultList.groups.length;
-                    console.log('$scope.resultList.lastPhotoDate', $scope.resultList.lastPhotoDate);
-                    //$scope.lastPhotoDate = String(new Date($scope.resultList.lastPhotoDate * 1000)).substr(0, 25) || ' --- ';
-                    $scope.lastPhotoDate = new Date($scope.resultList.lastPhotoDate * 1000);
+                    console.log('$scope.resultList.lastPhoto.date', $scope.resultList.lastPhoto.date);
+                    $scope.lastPhoto = $scope.resultList.lastPhoto;
                 }
                 else {
                     $scope.searchVkCont = false;
@@ -270,13 +269,14 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
     }, true);
 
     $scope.searchLoading = false;
-    $scope.counter = 0;
+    $scope.searchCounter = 0;
+    $scope.photoTmpFirst = {};
 
     // жмем кнопку поиска
     $scope.searchVk = function () {
         console.info('------------ searchVk------------');
         $scope.searchLoading = true;
-        $scope.counter = 0;
+        $scope.searchCounter = 0;
 
         //$scope.dateTmp = Date.parse($("#datetimepicker1").find('input').eq(0).val()) / 1000;
         var dateStart = Date.parse($("#datetimepicker1").find('input').eq(0).val()) / 1000;
@@ -287,7 +287,7 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
 
         $scope.response = serviceSearchVk.GetPhotos2({
             searchContinue: 0,
-            count: 1000,
+            count: 200,
             offset: 0,
             start_time: dateStart,
             end_time: dateEnd,
@@ -308,18 +308,18 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
     $scope.searchVkContinue = function () {
         console.info('------------ searchVkContinue------------');
         $scope.searchLoading = true;
-        $scope.counter++;
+        $scope.searchCounter++;
 
-        $scope.dateTmp = $scope.resultList.lastPhotoDate;
+        $scope.dateTmp = moment($scope.resultList.lastPhoto.date * 1000).format('YYYY-MM-DD  HH:mm:ss');
         var dateStart = Date.parse($("#datetimepicker1").find('input').eq(0).val()) / 1000;
-        var dateEnd = $scope.resultList.lastPhotoDate;
+        var dateEnd = $scope.resultList.lastPhoto.date;
 
         console.info('dateStart: ', new Date(dateStart * 1000));
         console.info('dateEnd: ', new Date(dateEnd * 1000));
 
         $scope.response = serviceSearchVk.GetPhotos2({
             searchContinue: 1,
-            count: 1000,
+            count: 200,
             offset: 0,
             start_time: dateStart,
             end_time: dateEnd,
@@ -392,10 +392,11 @@ mainApp.service('serviceSearchVk', function () {
     this.photos = [];
 
     this.VKdata = {
-        lastPhotoDate: 1,
+        lastPhoto: {},
         users: new Array(),
         groups: new Array(),
         photos: new Array(),
+        photosTmp: new Array(),
         ids: {
             usersIds: new Array(),
             groupsIds: new Array()
@@ -502,7 +503,7 @@ mainApp.service('serviceSearchVk', function () {
 
         self.users = [];
         self.groups = [];
-        self.photos = [];
+        self.VKdata.photosTmp = [];
 
         console.info('self.counter: ', self.counter++);
 
@@ -538,14 +539,14 @@ mainApp.service('serviceSearchVk', function () {
                         succes(self.VKdata);
                     }
 
-                    self.photos = data.response.items;
+                    self.VKdata.photosTmp = data.response.items;
                     console.log('data.response.count = ' + data.response.count);
                     console.log('data.response.items.length = ' + data.response.items.length);
-                    self.VKdata.photos = self.VKdata.photos.concat(self.photos);
-                    //console.log(self.photos[self.photos.length - 1].date);
+                    self.VKdata.photos = self.VKdata.photos.concat(self.VKdata.photosTmp);
+                    //console.log(self.VKdata.photosTmp[self.VKdata.photosTmp.length - 1].date);
                     //console.log(self.VKdata);
-                    if (self.photos.length > 0) {
-                        self.VKdata.lastPhotoDate = self.photos[self.photos.length - 1].date;
+                    if (self.VKdata.photosTmp.length > 0) {
+                        self.VKdata.lastPhoto = self.VKdata.photosTmp[self.VKdata.photosTmp.length - 1];
                     }
                     self.VKdata.countPhotosVK = data.response.count;
                     self.VKdata.countPhotosRES = data.response.items.length;
@@ -595,8 +596,8 @@ mainApp.service('serviceSearchVk', function () {
                                     self.users.push(data.response[i]);
                                 }
                                 self.VKdata.users = self.VKdata.users.concat(self.users);
-                                //packingPhotosInUsers(self.VKdata.users, self.photos);
-                                packingUsersInPhotos(self.photos, self.VKdata.users);
+                                //packingPhotosInUsers(self.VKdata.users, self.VKdata.photosTmp);
+                                packingUsersInPhotos(self.VKdata.photosTmp, self.VKdata.users);
                                 if (self.groupsIds.length === 0) {
                                     succes(self.VKdata);
                                 }
@@ -626,8 +627,8 @@ mainApp.service('serviceSearchVk', function () {
                                 self.groups.push(data.response[i]);
                             }
                             self.VKdata.groups = self.VKdata.groups.concat(self.groups);
-                            //packingPhotosInGroups(self.VKdata.groups, self.photos);
-                            packingGroupsInPhotos(self.photos, self.VKdata.groups);
+                            //packingPhotosInGroups(self.VKdata.groups, self.VKdata.photosTmp);
+                            packingGroupsInPhotos(self.VKdata.photosTmp, self.VKdata.groups);
                             succes(self.VKdata);
                             self.groups = [];
                         }
