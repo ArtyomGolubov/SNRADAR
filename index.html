@@ -37,7 +37,7 @@
 </head>
 <body id="top" ng-app="mainApp" ng-controller="MapCtrl" ng-init="dateInit()">
 
-    <div id="vk_api_transport"></div>
+    <!--<div id="vk_api_transport"></div>
     <script type="text/javascript">
         window.vkAsyncInit = function () {
         VK.init({
@@ -52,13 +52,26 @@
         el.async = true;
         document.getElementById("vk_api_transport").appendChild(el);
         }, 0);
-    </script>
+    </script>-->
 
     <div id="overlay"></div>
     <div class="photo_discription_top">
-        <div class="close_btn glyphicon glyphicon-remove-circle"></div>
+        <div class="close_btn glyphicon glyphicon-remove"></div>
         <a class="owner_name" target="_blank"></a>
-        <div class="photo_date" ng-model="photo_date">{{photo_date | date:'yyyy-MM-dd HH:mm:ss'}}</div>
+
+        
+        <div class="photo_date" ng-model="photo_date">
+            <button type="button" data-toggle="dropdown" class="btn_photo_menu dropdown-toggle">
+                <span class="caret"></span>
+            </button>
+            {{photo_date | date:'yyyy-MM-dd HH:mm:ss'}}
+            <ul class="dropdown-menu">
+                <li><a href="#">Ссылка на профиль</a></li>
+                <li><a href="#">Ссылка на фото</a></li>
+                <!--<li class="divider"></li>-->
+                <li><a href="#">Личные сообщения ---</a></li>
+            </ul>
+        </div>
     </div>
     <a href="" id="photo_orig_link" target="_blank"><img id="photo_modal" class="img-responsive" /></a>
 
@@ -101,7 +114,7 @@
                             <div class="checkbox">
                                 <label>
                                     <input type="checkbox" ng-model="coordsVisible" />
-                                    Показывать кординаты
+                                    Показывать кординаты окружности
                                 </label>
                             </div>
                         </div>
@@ -113,7 +126,7 @@
                             </div>
                         </div>
                         <div class="menu_tooltip">
-                            Здесь меню с установкой времени и радиуса                      
+                            Здесь меню с установкой времени и радиуса
                         </div>
 
                         <yandex-map center="map.center" zoom="map.zoom">
@@ -178,7 +191,7 @@
         </div>
         <div class="container">
             <div class="search">
-                <button ng-click="searchVk()" class="btn  btn-default">Поиск</button>
+                <button ng-click="searchVk()" class="btn btn-default">Поиск</button>
             </div>
 
             <hr />
@@ -211,7 +224,7 @@
                     </svg>
                 </div>
 
-                
+
                 <div class="search_info" ng-if="searchVkCont">
                     <div class="search">
                         <button ng-click="searchVkContinue()" class="btn btn-default">Загрузить еще фотографии</button>
@@ -231,9 +244,12 @@
 
 
 
-    <script src="libs/plugins.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/modules/mainApp/directives/photoAll.js"></script>
+    <script src="libs/plugins.js">
+    </script>
+    <script src="js/main.js">
+    </script>
+    <script src="js/modules/mainApp/directives/photoAll.js">
+    </script>
     <!--<script type="text/javascript">
         $(function () {
             //Инициализация datetimepicker8 и datetimepicker9

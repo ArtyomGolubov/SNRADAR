@@ -13,6 +13,14 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
 
 
     // cookies --------------------
+    // получаем дату
+    var now = new Date(),
+    // this will set the expiration to 12 months
+    exp = new Date(now.getFullYear(), now.getMonth() + 3, now.getDate());
+
+    $cookies.put('someToken', 'blabla', {
+        expires: exp
+    });
     // вынимаем куки
     var cookeis = $cookies.getObject('mapConfig');
 
@@ -41,10 +49,14 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
 
     // пишем куки
     $scope.$watch('map', function () {
-        $cookies.putObject('mapConfig', cookeis);
+        $cookies.putObject('mapConfig', cookeis, {
+            expires: exp
+        });
     }, true);
     $scope.$watch('circleProp', function () {
-        $cookies.putObject('mapConfig', cookeis);
+        $cookies.putObject('mapConfig', cookeis, {
+            expires: exp
+        });
     }, true);
     //-----------------------------
 

@@ -368,6 +368,7 @@ yandex-map {
 
 .photo_discription_top {
     top: 8%;
+    //transition: all .2s;
     .info_style;
     .owner_name {
         color: darken(@colorMainFont, 5%) !important;
@@ -377,14 +378,30 @@ yandex-map {
 
     .photo_date {
         color: darken(@colorMainFont, 5%) !important;
-        width: 170px;
+        width: 210px;
+
+        .dropdown-menu {
+            //position:relative;
+            transition: all .5s;
+            
+            background-color: @colorBacground !important;
+            border: 1px solid darken(@colorMainFont, 40%);
+            li {
+                a {
+                    color: darken(@colorMainFont, 5%) !important;
+                }
+                a:hover {
+                    color: @colorBacground !important;
+                }
+            }
+        }
     }
 
     .close_btn {
         float: right;
         padding-left: 10px;
         right: 0px;
-        font-size: 26px;
+        font-size: 16px;
         cursor: pointer;
     }
 
@@ -590,6 +607,27 @@ yandex-map {
 	background: @colorMainFont;
 }
 
+/* кнопка выпадающего меню для фото */
+
+.btn_photo_menu {
+    padding: 0 10px;
+    margin-right: 10px;
+    border-radius: 4px;
+    border: none;
+    background: darken(@colorBacground, 10%);
+    .caret {
+        margin-left: 0px;
+    }
+}
+
+.btn_photo_menu:focus {
+    .caret {
+        border-bottom: 4px dashed !important; 
+        border-right: 4px solid transparent;
+        border-left: 4px solid transparent;
+        border-top: none !important;
+    }
+}
 
 
 
