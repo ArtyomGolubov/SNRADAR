@@ -298,6 +298,9 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
     // жмем кнопку поиска
     $scope.searchVk = function () {
         console.info('------------ searchVk------------');
+        // чистим блок найденных пользователей
+        $('.photo_users').children().remove().end().text($.trim($('#element_id').text()));
+
         $scope.searchLoading = true;
         $scope.searchCounter = 0;
 
@@ -310,7 +313,7 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
 
         $scope.response = serviceSearchVk.GetPhotos2({
             searchContinue: 0,
-            count: 1000,
+            count: 50,
             offset: 0,
             start_time: dateStart,
             end_time: dateEnd,
@@ -320,7 +323,7 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
         }, function (res) {
             console.log('pista: ', res);
             $scope.searchLoading = false;
-            $scope.$apply(function () {
+            $scope.$applyAsync(function () {
                 $scope.resultList = serviceSearchVk.VKdata;
                 console.log('result: ', $scope.resultList);
             });
@@ -342,7 +345,7 @@ mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader,
 
         $scope.response = serviceSearchVk.GetPhotos2({
             searchContinue: 1,
-            count: 1000,
+            count: 50,
             offset: 0,
             start_time: dateStart,
             end_time: dateEnd,
@@ -596,6 +599,8 @@ mainApp.service('serviceSearchVk', function () {
                     console.log('data.response.items.length = ' + data.response.items.length);
                     self.VKdata.photos = self.VKdata.photos.concat(self.photos);
 
+                    self.VKdata.photosTmp = self.photos;
+
                     if (self.photos.length > 0) {
                         self.VKdata.lastPhoto = self.photos[self.photos.length - 1];
                     }
@@ -673,6 +678,7 @@ mainApp.service('serviceSearchVk', function () {
                                 packingUsersInPhotos(self.VKdata.photos, self.users);
                                 if (self.groupsIds.length === 0) {
                                     succes(self.VKdata);
+                                    ViewPhotoUsers(self.VKdata);
                                 }
                                 self.users = [];
                             }
@@ -715,6 +721,7 @@ mainApp.service('serviceSearchVk', function () {
                                 packingPhotosInGroups(self.VKdata.groups, self.photos);
                                 packingGroupsInPhotos(self.VKdata.photos, self.groups);
                                 succes(self.VKdata);
+                                ViewPhotoUsers(self.VKdata);
                                 self.groups = [];
                             }
                         });

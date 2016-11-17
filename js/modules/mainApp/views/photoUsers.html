@@ -1,0 +1,16 @@
+﻿<div class="photo_list" ng-repeat="user in resultList.users">
+    <div class="container">
+        <div class="row">
+            <div class="user_photo col-sm-2">
+                <h4>{{user.first_name}} {{user.last_name}}</h4>
+                <img src="{{user.photo_max_orig}}" alt="" />
+            </div>
+            <div class="col-sm-10">
+                <div image-in-list></div>
+                <!--<div class="photo_list" ng-repeat="photo in user.photos">
+                    <img ng-src="{{photo.photo_130}}" class="photo_in_result" ng-click="photoModal($event, photo)" />
+                </div>-->
+            </div>
+        </div>
+    </div>
+</div>
