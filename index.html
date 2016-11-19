@@ -64,7 +64,7 @@
             <button type="button" data-toggle="dropdown" class="btn_photo_menu dropdown-toggle">
                 <span class="caret"></span>
             </button>
-            {{photo_date | date:'yyyy-MM-dd HH:mm:ss'}}
+            <span class="date">{{photo_date | date:'yyyy-MM-dd HH:mm:ss'}}</span>
             <ul class="dropdown-menu">
                 <li><a href="#">Ссылка на профиль</a></li>
                 <li><a href="#">Ссылка на фото</a></li>
@@ -276,10 +276,11 @@
 
 
 
-    <script src="libs/plugins.js">
-    </script>
-    <script src="js/main.js">
-    </script>
+    <script src="libs/plugins.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/modules/mainApp/mainApp.js"></script>
+    <script src="js/modules/mainApp/controllers/MapCtrl.js"></script>
+    <script src="js/modules/mainApp/services/serviceSearchVk.js"></script>
     <script src="js/modules/mainApp/directives/photoAll.js"></script>
     <script src="js/modules/mainApp/directives/photoUsers.js"></script>
     <!--<script type="text/javascript">

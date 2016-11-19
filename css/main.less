@@ -309,6 +309,8 @@ yandex-map {
 
     img {
         height: 75px;
+        cursor: pointer;
+        border-left: 1px solid darken(@colorMainFont, 40%);
     }
 }
 
@@ -632,18 +634,26 @@ yandex-map {
 .user_div {
     display: flex;
     justify-content: flex-start;
-
+    margin-bottom: 5px;
+    border-bottom: 1px solid darken(@colorMainFont, 60%);;
+    padding-bottom: 5px;
+    color: @colorMainFont;
     .user_avatar_div { 
         width: 100px;
         img{
             border-radius: 50%;
+            height: 50px;
         }
     }
     .user_photos {
         margin-left: 20px;
     }
-}
 
+    a {
+        color: @colorMainFont;
+        text-decoration: none;
+    }
+}
 
 
 
