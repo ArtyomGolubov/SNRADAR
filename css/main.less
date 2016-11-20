@@ -278,6 +278,28 @@ yandex-map {
         width: 100% !important;
     }
 }
+
+.nav-tabs {
+    margin-bottom: 20px;
+}
+
+.nav-tabs > li > a {
+    color: @colorMainFont !important;
+    padding: 10px 10px !important;
+    &:hover {
+        background-color: @colorMainFont !important;
+        color: @colorBacground !important;
+    }
+}
+
+.nav-tabs > li.active > a {
+    background-color: @colorBacground !important;
+    color: @colorMainFont !important;
+    /*&:hover {
+        background-color: @colorMainFont !important;
+        color: @colorBacground !important;
+    }*/
+}
 /*----------------------*/
 
 #radius {
@@ -307,7 +329,7 @@ yandex-map {
         }
     }
 
-    img {
+    .photo_in_userlist {
         height: 75px;
         cursor: pointer;
         border-left: 1px solid darken(@colorMainFont, 40%);
@@ -417,7 +439,9 @@ yandex-map {
 }
 
 .photo_in_result {
+    height: 75px;
     cursor: pointer;
+    border-left: 1px solid darken(@colorMainFont, 40%);
 }
 
 .loading {

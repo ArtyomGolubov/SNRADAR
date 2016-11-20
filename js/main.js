@@ -218,7 +218,8 @@ function ViewPhotoUsers(VKdata) {
                 // если такой юзер есть, то добавляем в разметку его фото
                 if (VKdata.photosTmp[i].owner_id == $(element).attr('id')) {
                     var divPhotos = $(element).find('.user_photos').eq(0);
-                    var img = $('<img>').attr('src', VKdata.photosTmp[i].photo_130)
+                    var img = $('<img>').attr('src', VKdata.photosTmp[i].photo_75)
+                    .addClass('photo_in_userlist')
                     .on('click', { photo: VKdata.photosTmp[i] }, modalPhoto); // эту строку надо запомнить :)
                     divPhotos.append(img);
                     userFinded = true;
@@ -235,7 +236,8 @@ function ViewPhotoUsers(VKdata) {
                 for (var k = 0; k < VKdata.users.length; k++) {
                     if (VKdata.users[k].id === ownerId) {
 
-                        img = $('<img>').attr('src', VKdata.users[k].photo_50);
+                        img = $('<img>').attr('src', VKdata.users[k].photo_50)
+                        .addClass('avatar');
                         divAvatar.append(img);
 
                         var span = $('<div>').text(VKdata.users[k].first_name);
@@ -246,12 +248,73 @@ function ViewPhotoUsers(VKdata) {
                         a.append(divAvatar);
                         divUser.append(a);
 
-                        img = $('<img>').attr('src', VKdata.photosTmp[i].photo_130)
+                        img = $('<img>').attr('src', VKdata.photosTmp[i].photo_75)
+                        .addClass('photo_in_userlist')
                         .on('click', { photo: VKdata.photosTmp[i] }, modalPhoto); // эту строку надо запомнить :)
                         divPhotos.append(img);
                         divUser.append(divPhotos);
 
                         div.append(divUser);
+                    }
+                }
+            }
+        }
+    }, 3000);
+}
+
+function ViewPhotoGroups(VKdata) {
+    setTimeout(function () {
+        console.log('ViewPhotoGroups ', VKdata);
+        // блок со всемми группами
+        var div = $('.photo_groups').eq(0);
+        
+        // перебираем все новые фото
+        for (var i = 0; i < VKdata.photosTmp.length; i++) {
+            var groupId = VKdata.photosTmp[i].owner_id;
+            var userFinded = false;
+            if (groupId < 0) {
+                groupId = Math.abs(groupId);
+                // перебираем всех имеющиеся группы
+                var divsUsers = $('.user_div').each(function (index, element) {
+                    // если такая группа есть, то добавляем в разметку ее фото
+                    if (groupId == $(element).attr('id')) {
+                        var divPhotos = $(element).find('.user_photos').eq(0);
+                        var img = $('<img>').attr('src', VKdata.photosTmp[i].photo_75)
+                        .addClass('photo_in_userlist')
+                        .on('click', { photo: VKdata.photosTmp[i] }, modalPhoto); // эту строку надо запомнить :)
+                        divPhotos.append(img);
+                        userFinded = true;
+                    }
+                });
+                // если такой группы еще нет, то добавляем ее в разметку
+                if (!userFinded) {
+                    var ownerId = groupId;
+                    var a = $('<a>').attr('href', 'https://vk.com/public' + ownerId)
+                    .attr('target', '_blank');
+                    var divUser = $('<div>').addClass('user_div').attr('id', ownerId);
+                    var divAvatar = $('<div>').addClass('user_avatar_div');
+                    divPhotos = $('<div>').addClass('user_photos');
+                    for (var k = 0; k < VKdata.groups.length; k++) {
+                        if (VKdata.groups[k].id === ownerId) {
+
+                            img = $('<img>').attr('src', VKdata.groups[k].photo_50)
+                            .addClass('avatar');
+                            divAvatar.append(img);
+
+                            var span = $('<div>').text(VKdata.groups[k].name);
+                            divAvatar.append(span);
+
+                            a.append(divAvatar);
+                            divUser.append(a);
+
+                            img = $('<img>').attr('src', VKdata.photosTmp[i].photo_75)
+                            .addClass('photo_in_userlist')
+                            .on('click', { photo: VKdata.photosTmp[i] }, modalPhoto); // эту строку надо запомнить :)
+                            divPhotos.append(img);
+                            divUser.append(divPhotos);
+
+                            div.append(divUser);
+                        }
                     }
                 }
             }

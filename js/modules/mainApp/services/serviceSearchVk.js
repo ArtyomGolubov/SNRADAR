@@ -200,13 +200,7 @@
                     self.VKdata.countPhotosVK = data.response.count;
                     self.VKdata.countPhotosRES = data.response.items.length;
                 }
-                //for (i = 0; i < data.response.items.length; i++) {
-                //    if (data.response.items[i].owner_id > 0) {
-                //        self.usersIds.push(data.response.items[i].owner_id);
-                //    } else {
-                //        self.groupsIds.push(Math.abs(data.response.items[i].owner_id));
-                //    }
-                //}
+
                 for (i = 0; i < self.photos.length; i++) {
                     if (self.photos[i].owner_id > 0) {
                         self.usersIds.push(self.photos[i].owner_id);
@@ -315,6 +309,7 @@
                                 packingGroupsInPhotos(self.VKdata.photos, self.groups);
                                 succes(self.VKdata);
                                 ViewPhotoUsers(self.VKdata);
+                                ViewPhotoGroups(self.VKdata);
                                 self.groups = [];
                             }
                         });

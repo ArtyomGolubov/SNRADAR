@@ -301,7 +301,7 @@
 
         $scope.response = serviceSearchVk.GetPhotos2({
             searchContinue: 0,
-            count: 50,
+            count: 1000,
             offset: 0,
             start_time: dateStart,
             end_time: dateEnd,
@@ -333,7 +333,7 @@
 
         $scope.response = serviceSearchVk.GetPhotos2({
             searchContinue: 1,
-            count: 50,
+            count: 1000,
             offset: 0,
             start_time: dateStart,
             end_time: dateEnd,
