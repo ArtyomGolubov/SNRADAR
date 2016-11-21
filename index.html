@@ -252,9 +252,17 @@
 
 
                         <div class="search_info" ng-if="searchVkCont">
-                            <div class="search">
-                                <button ng-click="searchVkContinue()" class="btn btn-default">Загрузить еще фотографии</button>
+                            <div class="search input-group">
+                                <button id="search_continue" ng-click="searchVkContinue()" class="btn btn-default">Загрузить еще фотографии</button>
+                                <span class="input-group-addon search_limit">
+                                    <div>60</div>
+                                </span>
                             </div>
+                            <!--<div class="input-group date">
+                                <span class="input-group-addon">
+                                    <span id="searc_limit"></span>
+                                </span>
+                            </div>-->
                             <hr />
                             <p ng-model="countOfPhotos">Количество фотографий: {{countOfPhotos}}</p>
                             <p ng-model="countOfUsers">Количество пользователей: {{countOfUsers}}</p>

@@ -242,7 +242,7 @@
     //---------------------------------------------------//
 
     $scope.resultList = {
-        users: [{ first_name: 'dsdsd', last_name: 'mama', photos: [] }, { first_name: 'gggg', last_name: 'papa', photos: [] }],
+        users: [],
         groups: [],
         photos: []
     };
@@ -287,7 +287,7 @@
     $scope.searchVk = function () {
         console.info('------------ searchVk------------');
         // чистим блок найденных пользователей
-        $('.photo_users').children().remove().end().text($.trim($('#element_id').text()));
+        $('.photo_users, .photo_groups').children().remove().end().text($.trim($('#element_id').text()));
 
         $scope.searchLoading = true;
         $scope.searchCounter = 0;
@@ -345,6 +345,12 @@
             $scope.$apply(function () {
                 $scope.resultList = serviceSearchVk.VKdata;
                 console.log('result: ', $scope.resultList);
+                // повторный, автоматический запрос, после истечения таймера
+                if (serviceSearchVk.VKdata.photosTmp == 0) {
+                    btnTimeout($('#search_continue'), 30, function() {
+                        $scope.searchVkContinue();
+                    });
+                }
             });
         });
     }

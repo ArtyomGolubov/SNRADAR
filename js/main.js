@@ -68,20 +68,20 @@ $(document).ready(function () {
     /* Smooth Scrolling
     ------------------------------------------------------ */
     $('.smoothscroll').on('click', function (e) {
-        console.log('Smooth Scrolling 0');
+        //console.log('Smooth Scrolling 0');
         e.preventDefault();
-        console.log('Smooth Scrolling 1');
+        //console.log('Smooth Scrolling 1');
 
         var target = this.hash,
             $target = $(target);
-        console.log(e.hash);
+        //console.log(e.hash);
 
         $('html, body').stop().animate({
             'scrollTop': $target.offset().top - 80
         }, 800, 'swing', function () {
             window.location.hash = target;
         });
-        console.log('Smooth Scrolling 2');
+        //console.log('Smooth Scrolling 2');
     });
 
     /*-----------------------------------------------------*/
@@ -163,7 +163,7 @@ $(document).ready(function () {
 
 
 function modalPhoto(event) {
-    console.log('photo : ', event.data.photo);
+    //console.log('photo : ', event.data.photo);
     var photo = event.data.photo;
     var photoOrig = photo.photo_1280 || photo.photo_807 || photo.photo_604;
     var photoMax = photo.photo_2560 || photo.photo_1280 || photo.photo_807 || photo.photo_604;
@@ -322,3 +322,32 @@ function ViewPhotoGroups(VKdata) {
     }, 3000);
 }
 
+// дизайбл кнопки + аддон с таймаутом
+function btnTimeout(btn, interval, callback) {
+    //var searchBtn = $('#search_continue');
+    //var text = btn.text();
+    var addon = $('.search_limit');
+    var addonDiv = $('.search_limit>div');
+    btn.attr('disabled', 'true');
+    addonDiv.text(interval);
+    addon.show();
+    btn.css('border-top-right-radius', '0px')
+       .css('border-bottom-right-radius', '0px');
+    setTimeout(function () {
+        interval--;
+        
+        if (interval == 0) {
+            btn.css('border-top-right-radius', '4px')
+            .css('border-bottom-right-radius', '4px');
+            addon.hide();
+            btn.removeAttr('disabled');
+            callback();
+        }
+        else {
+            setTimeout(function () {
+                //btn.text(text);
+                btnTimeout(btn, interval, callback);
+            }, 500);
+        }
+    }, 500);
+}
