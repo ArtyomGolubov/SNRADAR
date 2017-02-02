@@ -1,4 +1,5 @@
 ﻿// --- simple functions ----------------
+var counterErrorsForIMG = 0;
 
 $(document).ready(function () { // вся мaгия пoсле зaгрузки стрaницы
     //$('.photo_in_result').click(function (event) { // лoвим клик пo ссылки с id="go"
@@ -28,6 +29,7 @@ $(document).ready(function () { // вся мaгия пoсле зaгрузки с
 
 
 $(document).ready(function () {
+    
     //Menu "Hamburger" Icon Animations
     $('#nav-icon1,#nav-icon2,#nav-icon3,#nav-icon4').click(function () {
         $(this).toggleClass('open');
@@ -57,12 +59,14 @@ $(document).ready(function () {
     $('.menu_tooltip').click(function () {
         $('.menu_tooltip').queue("fx", []).hide('fast');
     });
+
+
 });
 
 
 // Часть для плавного скроллинга и для навигационного меню.
 (function ($) {
-    console.log('function ($)');
+    //console.log('function ($)');
 
     /*---------------------------------------------------- */
     /* Smooth Scrolling
@@ -163,6 +167,7 @@ $(document).ready(function () {
 
 
 function modalPhoto(event) {
+    console.info('counterErrorsForIMG = ', counterErrorsForIMG);
     //console.log('photo : ', event.data.photo);
     var photo = event.data.photo;
     var photoOrig = photo.photo_1280 || photo.photo_807 || photo.photo_604;
@@ -205,11 +210,11 @@ function modalPhoto(event) {
 
 function ViewPhotoUsers(VKdata) {
     setTimeout(function () {
-        console.log('ViewPhotoUsers ', VKdata);
+        //console.log('ViewPhotoUsers ', VKdata);
         // блок со всемми юзерами
         var div = $('.photo_users').eq(0);
 
-        console.log('ViewPhotoUsers ', div);
+        //console.log('ViewPhotoUsers ', div);
         // перебираем все новые фото
         for (var i = 0; i < VKdata.photosTmp.length; i++) {
             var userFinded = false;
@@ -264,7 +269,7 @@ function ViewPhotoUsers(VKdata) {
 
 function ViewPhotoGroups(VKdata) {
     setTimeout(function () {
-        console.log('ViewPhotoGroups ', VKdata);
+        //console.log('ViewPhotoGroups ', VKdata);
         // блок со всемми группами
         var div = $('.photo_groups').eq(0);
         
@@ -351,3 +356,19 @@ function btnTimeout(btn, interval, callback) {
         }
     }, 500);
 }
+
+// на планшете работает, в консоли ошибка подгружения изображения в одном Элементе. Хз где элемент этот.
+function onerrorImg(event) {
+    var tm = setTimeout(function () {
+        counterErrorsForIMG++;
+        if (counterErrorsForIMG == 5) {
+            counterErrorsForIMG = 0;
+            $(event).removeAttr('onerror');
+        }
+        $(event).attr('src', $(event).attr('data-loading-text'));
+        //console.log($(event));
+        console.log('counterErrorsForIMG = ', counterErrorsForIMG);
+    }, 3000);
+    //console.log(src);
+}
+

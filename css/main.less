@@ -302,10 +302,14 @@ yandex-map {
 }
 /*----------------------*/
 
-#radius {
+#radius, #pageSize {
     /*margin-right: 12px;*/
     background-color: @colorBacground;
     color: @colorMainFont;
+}
+
+#pageSize {
+    width: 220px;
 }
 
 .search {
@@ -338,6 +342,12 @@ yandex-map {
         font-size: 17px;
         p {
             margin: 0;
+        }
+
+        label.btn {
+            /*margin: 3px;*/
+            padding: 4px 10px;
+            height: 34px;
         }
     }
 
@@ -690,6 +700,27 @@ yandex-map {
         text-decoration: none;
     }
 }
+
+.pagination_group {
+    width: 300px;
+    color: @colorMainFont;
+    .btn {
+        margin: 5px 1px;
+        padding: 5px;
+        background-color: @colorBacground;
+        color: @colorMainFont;
+        &:hover {
+            background-color: @colorBacground !important;
+            color: @colorMainFont;
+            opacity: 1 !important;
+        }
+    }
+}
+
+.photo_date_diapazon {
+    color: @colorMainFont;
+}
+
 
 
 

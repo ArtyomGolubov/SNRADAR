@@ -132,26 +132,25 @@
     this.GetPhotos2 = function (parameters, succes, error) {
         if (parameters.searchContinue == 0) {
 
-            self.VKdata = {
-                users: [],
-                groups: [],
-                photos: [],
-                ids: {
-                    usersIds: new Array(),
-                    groupsIds: new Array(),
-                }
-            };
-            console.info('self.VKdata searchContinue: ', self.VKdata);
+            self.VKdata.users.length = 0;
+            self.VKdata.groups.length = 0;
+            self.VKdata.photos.length = 0;
+            self.VKdata.photosTmp.length = 0;
+
+            self.VKdata.ids.usersIds.length = 0;
+            self.VKdata.ids.groupsIds.length = 0;
+
+            //console.info('self.VKdata searchContinue: ', self.VKdata);
         }
-        console.info('self.VKdata search: ', self.VKdata);
+        //console.info('self.VKdata search: ', self.VKdata);
 
-        self.usersIds = [];
-        self.groupsIds = [];
+        self.usersIds.length = 0;
+        self.groupsIds.length = 0;
 
-        self.users = [];
-        self.groups = [];
-        self.VKdata.photosTmp = [];
-        self.photos = [];
+        self.users.length = 0;
+        self.groups.length = 0;
+        self.VKdata.photosTmp.length = 0;
+        self.photos.length = 0;
 
         //console.info('self.counter: ', self.counter++);
 
@@ -186,6 +185,15 @@
                     if (data.response.items.length === 0) {
                         succes(self.VKdata);
                     }
+
+                    //-------------------------------------- test
+                    //setTimeout(function () {
+                        $(".photo_in_result")
+                        .on('load', function () { console.log("image loaded correctly"); })
+                        .on('error', function () { console.log("error loading image"); });
+                        //.attr("src", $(originalImage).attr("src"));
+                    //}, 5000);
+                    //--------------------------------------
 
                     self.photos = data.response.items;
                     console.log('data.response.count = ' + data.response.count);
@@ -267,7 +275,7 @@
                                     succes(self.VKdata);
                                     ViewPhotoUsers(self.VKdata);
                                 }
-                                self.users = [];
+                                self.users.length = 0;
                             }
                         });
                     }
@@ -283,7 +291,7 @@
                         groupsIdsSplitArr = [self.groupsIds];
                     }
 
-                    console.log('groupsIdsSplitArr : ', groupsIdsSplitArr)
+                    //console.log('groupsIdsSplitArr : ', groupsIdsSplitArr)
 
                     for (var j = 0; j < groupsIdsSplitArr.length; j++) {
                         $.ajax({
@@ -310,7 +318,7 @@
                                 succes(self.VKdata);
                                 ViewPhotoUsers(self.VKdata);
                                 ViewPhotoGroups(self.VKdata);
-                                self.groups = [];
+                                self.groups.length = 0;
                             }
                         });
                     }

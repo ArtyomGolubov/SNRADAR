@@ -12,6 +12,7 @@
     <link href="libs/bootstrap/Content/bootstrap.css" rel="stylesheet" />
     <link href="libs/bootstrap/Content/bootstrap-datetimepicker.css" rel="stylesheet" />
     <link href="css/main.css" rel="stylesheet" />
+    <link href="libs/bootstrap/Content/bootstrap-checkbox.css" rel="stylesheet" />
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet"/>
 
     <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>-->
@@ -36,6 +37,40 @@
     <script src="//vk.com/js/api/openapi.js" type="text/javascript"></script>
 </head>
 <body id="top" ng-app="mainApp" ng-controller="MapCtrl" ng-init="dateInit()">
+
+    
+    <!-- Yandex.Metrika counter -->
+    <!--<script type="text/javascript">
+        (function (d, w, c) {
+        (w[c] = w[c] || []).push(function() {
+        try {
+        w.yaCounter42504114 = new Ya.Metrika({
+        id:42504114,
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true
+        });
+        } catch(e) { }
+        });
+
+        var n = d.getElementsByTagName("script")[0],
+        s = d.createElement("script"),
+        f = function () { n.parentNode.insertBefore(s, n); };
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+        if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+        } else { f(); }
+        })(document, window, "yandex_metrika_callbacks");
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/42504114" style="position:absolute; left:-9999px;" alt="" /></div></noscript>-->
+    <!-- /Yandex.Metrika counter -->
+
+    <script type="text/javascript">
+        
+    </script>
 
     <!--<div id="vk_api_transport"></div>
     <script type="text/javascript">
@@ -209,19 +244,73 @@
                     <li><a data-toggle="tab" href="#panel2">Пользователи</a></li>
                     <li><a data-toggle="tab" href="#panel3">Группы</a></li>
                     <!--<li class="dropdown">
-                <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                    Другие панели
-                    <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a data-toggle="tab" href="#panel3">Панель 3</a></li>
-                    <li><a data-toggle="tab" href="#panel4">Панель 4</a></li>
-                </ul>
-            </li>-->
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            Другие панели
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a data-toggle="tab" href="#panel3">Панель 3</a></li>
+                            <li><a data-toggle="tab" href="#panel4">Панель 4</a></li>
+                        </ul>
+                    </li>-->
                 </ul>
                 <div class="tab-content">
                     <div id="panel1" class="tab-pane fade in active">
-                        <div photo-all></div>
+                        <!--<div photo-all=photo-all></div>-->
+                        <div class="pagination_group">
+                            <div class="justify">
+                                <div><small>Количество фотографий на странице :</small></div>
+                                <select ng-model="pageSize" id="pageSize" class="form-control" ng-change="currentPage=0" value="100">
+                                    <option value="10">10</option>
+                                    <option selected="selected" value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="200">200</option>
+                                    <option value="400">400</option>
+                                    <option value="700">700</option>
+                                    <option value="1000">1000</option>
+                                </select>
+                            </div>
+
+                            <button class="btn btn-default" ng-disabled="currentPage == 0" ng-click="currentPage=0">
+                                1-ая
+                            </button>
+                            <button class="btn btn-default" ng-disabled="currentPage == 0" ng-click="currentPage = currentPage-1">
+                                Пред.
+                            </button>
+                            {{currentPage+1}} / {{numberOfPages()}}
+                            <button class="btn btn-default" ng-disabled="currentPage >= resultList.photos.length/pageSize - 1" ng-click="currentPage=currentPage+1">
+                                След.
+                            </button>
+                            <button class="btn btn-default" ng-disabled="currentPage >= resultList.photos.length/pageSize - 1" ng-click="currentPage = numberOfPages() - 1">
+                                {{numberOfPages()}}-ая
+                            </button>
+                        </div>
+                        <div ng-show="resultList.photos.length > 0" class="photo_date_diapazon">
+                            <span>{{firstPhotoInPageDate}}</span><span>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</span> 
+                            <span>{{lastPhotoInPageDate}}</span>
+                        </div>
+
+                        <image-in-list class="photo_list" ng-repeat="photo in resultList.photos | startFrom:currentPage*pageSize | limitTo:pageSize">
+                            {{photo}}
+                        </image-in-list>
+                        <!--<div class="pagination_group" ng-show="resultList.photos.length > 0 && pageSize > 10">-->
+                        <div class="pagination_group" ng-show="resultList.photos.length > 0 && pageSize > 10">
+                            <div class="justify">
+                                <button class="btn btn-default" ng-disabled="currentPage == 0" ng-click="currentPage=0">
+                                    1-ая
+                                </button>
+                                <button class="btn btn-default" ng-disabled="currentPage == 0" ng-click="currentPage = currentPage-1">
+                                    Пред.
+                                </button>
+                                {{currentPage+1}} / {{numberOfPages()}}
+                                <button class="btn btn-default" ng-disabled="currentPage >= resultList.photos.length/pageSize - 1" ng-click="currentPage=currentPage+1">
+                                    След.
+                                </button>
+                                <button class="btn btn-default" ng-disabled="currentPage >= resultList.photos.length/pageSize - 1" ng-click="currentPage = numberOfPages() - 1">
+                                    {{numberOfPages()}}-ая
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div id="panel2" class="tab-pane fade">
                         <div class="photo_users"></div>
@@ -231,54 +320,61 @@
                     </div>
                 </div>
 
-                        <div ng-show="searchLoading" class="loading">
-                            <!--<div  class="loading">-->
-                            LOADING
-                            <?xml version="1.0" encoding="utf-8" ?>
-                            <svg width='198px' height='198px' viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="uil-gears">
-                                <rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect>
-                                <g transform="translate(-20,-20)">
-                                    <path fill="#8f7f59" d="M79.9,52.6C80,51.8,80,50.9,80,50s0-1.8-0.1-2.6l-5.1-0.4c-0.3-2.4-0.9-4.6-1.8-6.7l4.2-2.9c-0.7-1.6-1.6-3.1-2.6-4.5 L70,35c-1.4-1.9-3.1-3.5-4.9-4.9l2.2-4.6c-1.4-1-2.9-1.9-4.5-2.6L59.8,27c-2.1-0.9-4.4-1.5-6.7-1.8l-0.4-5.1C51.8,20,50.9,20,50,20 s-1.8,0-2.6,0.1l-0.4,5.1c-2.4,0.3-4.6,0.9-6.7,1.8l-2.9-4.1c-1.6,0.7-3.1,1.6-4.5,2.6l2.1,4.6c-1.9,1.4-3.5,3.1-5,4.9l-4.5-2.1 c-1,1.4-1.9,2.9-2.6,4.5l4.1,2.9c-0.9,2.1-1.5,4.4-1.8,6.8l-5,0.4C20,48.2,20,49.1,20,50s0,1.8,0.1,2.6l5,0.4 c0.3,2.4,0.9,4.7,1.8,6.8l-4.1,2.9c0.7,1.6,1.6,3.1,2.6,4.5l4.5-2.1c1.4,1.9,3.1,3.5,5,4.9l-2.1,4.6c1.4,1,2.9,1.9,4.5,2.6l2.9-4.1 c2.1,0.9,4.4,1.5,6.7,1.8l0.4,5.1C48.2,80,49.1,80,50,80s1.8,0,2.6-0.1l0.4-5.1c2.3-0.3,4.6-0.9,6.7-1.8l2.9,4.2 c1.6-0.7,3.1-1.6,4.5-2.6L65,69.9c1.9-1.4,3.5-3,4.9-4.9l4.6,2.2c1-1.4,1.9-2.9,2.6-4.5L73,59.8c0.9-2.1,1.5-4.4,1.8-6.7L79.9,52.6 z M50,65c-8.3,0-15-6.7-15-15c0-8.3,6.7-15,15-15s15,6.7,15,15C65,58.3,58.3,65,50,65z">
-                                        <animateTransform attributeName="transform" type="rotate" from="90 50 50" to="0 50 50" dur="1s" repeatCount="indefinite"></animateTransform>
-                                    </path>
-                                </g>
-                                <g transform="translate(20,20) rotate(15 50 50)">
-                                    <path fill="#9f9fab" d="M79.9,52.6C80,51.8,80,50.9,80,50s0-1.8-0.1-2.6l-5.1-0.4c-0.3-2.4-0.9-4.6-1.8-6.7l4.2-2.9c-0.7-1.6-1.6-3.1-2.6-4.5 L70,35c-1.4-1.9-3.1-3.5-4.9-4.9l2.2-4.6c-1.4-1-2.9-1.9-4.5-2.6L59.8,27c-2.1-0.9-4.4-1.5-6.7-1.8l-0.4-5.1C51.8,20,50.9,20,50,20 s-1.8,0-2.6,0.1l-0.4,5.1c-2.4,0.3-4.6,0.9-6.7,1.8l-2.9-4.1c-1.6,0.7-3.1,1.6-4.5,2.6l2.1,4.6c-1.9,1.4-3.5,3.1-5,4.9l-4.5-2.1 c-1,1.4-1.9,2.9-2.6,4.5l4.1,2.9c-0.9,2.1-1.5,4.4-1.8,6.8l-5,0.4C20,48.2,20,49.1,20,50s0,1.8,0.1,2.6l5,0.4 c0.3,2.4,0.9,4.7,1.8,6.8l-4.1,2.9c0.7,1.6,1.6,3.1,2.6,4.5l4.5-2.1c1.4,1.9,3.1,3.5,5,4.9l-2.1,4.6c1.4,1,2.9,1.9,4.5,2.6l2.9-4.1 c2.1,0.9,4.4,1.5,6.7,1.8l0.4,5.1C48.2,80,49.1,80,50,80s1.8,0,2.6-0.1l0.4-5.1c2.3-0.3,4.6-0.9,6.7-1.8l2.9,4.2 c1.6-0.7,3.1-1.6,4.5-2.6L65,69.9c1.9-1.4,3.5-3,4.9-4.9l4.6,2.2c1-1.4,1.9-2.9,2.6-4.5L73,59.8c0.9-2.1,1.5-4.4,1.8-6.7L79.9,52.6 z M50,65c-8.3,0-15-6.7-15-15c0-8.3,6.7-15,15-15s15,6.7,15,15C65,58.3,58.3,65,50,65z">
-                                        <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="90 50 50" dur="1s" repeatCount="indefinite"></animateTransform>
-                                    </path>
-                                </g>
-                            </svg>
-                        </div>
-
-
-                        <div class="search_info" ng-if="searchVkCont">
-                            <div class="search input-group">
-                                <button id="search_continue" ng-click="searchVkContinue()" class="btn btn-default">Загрузить еще фотографии</button>
-                                <span class="input-group-addon search_limit">
-                                    <div>60</div>
-                                </span>
-                            </div>
-                            <!--<div class="input-group date">
-                                <span class="input-group-addon">
-                                    <span id="searc_limit"></span>
-                                </span>
-                            </div>-->
-                            <hr />
-                            <p ng-model="countOfPhotos">Количество фотографий: {{countOfPhotos}}</p>
-                            <p ng-model="countOfUsers">Количество пользователей: {{countOfUsers}}</p>
-                            <p ng-model="countOfGroups">Количество групп: {{countOfGroups}}</p>
-                            <!--<p ng-model="lastPhotoDate">Дата последней в списке фотографии: {{lastPhotoDate | date:'yyyy-MM-dd HH:mm:ss'}}</p>-->
-                        </div>
-                    </div>
-                    iv
-                    ">
+                <div ng-show="searchLoading" class="loading">
+                    <!--<div  class="loading">-->
+                    LOADING
+                    <?xml version="1.0" encoding="utf-8" ?>
+                    <svg width='198px' height='198px' viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="uil-gears">
+                        <rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect>
+                        <g transform="translate(-20,-20)">
+                            <path fill="#8f7f59" d="M79.9,52.6C80,51.8,80,50.9,80,50s0-1.8-0.1-2.6l-5.1-0.4c-0.3-2.4-0.9-4.6-1.8-6.7l4.2-2.9c-0.7-1.6-1.6-3.1-2.6-4.5 L70,35c-1.4-1.9-3.1-3.5-4.9-4.9l2.2-4.6c-1.4-1-2.9-1.9-4.5-2.6L59.8,27c-2.1-0.9-4.4-1.5-6.7-1.8l-0.4-5.1C51.8,20,50.9,20,50,20 s-1.8,0-2.6,0.1l-0.4,5.1c-2.4,0.3-4.6,0.9-6.7,1.8l-2.9-4.1c-1.6,0.7-3.1,1.6-4.5,2.6l2.1,4.6c-1.9,1.4-3.5,3.1-5,4.9l-4.5-2.1 c-1,1.4-1.9,2.9-2.6,4.5l4.1,2.9c-0.9,2.1-1.5,4.4-1.8,6.8l-5,0.4C20,48.2,20,49.1,20,50s0,1.8,0.1,2.6l5,0.4 c0.3,2.4,0.9,4.7,1.8,6.8l-4.1,2.9c0.7,1.6,1.6,3.1,2.6,4.5l4.5-2.1c1.4,1.9,3.1,3.5,5,4.9l-2.1,4.6c1.4,1,2.9,1.9,4.5,2.6l2.9-4.1 c2.1,0.9,4.4,1.5,6.7,1.8l0.4,5.1C48.2,80,49.1,80,50,80s1.8,0,2.6-0.1l0.4-5.1c2.3-0.3,4.6-0.9,6.7-1.8l2.9,4.2 c1.6-0.7,3.1-1.6,4.5-2.6L65,69.9c1.9-1.4,3.5-3,4.9-4.9l4.6,2.2c1-1.4,1.9-2.9,2.6-4.5L73,59.8c0.9-2.1,1.5-4.4,1.8-6.7L79.9,52.6 z M50,65c-8.3,0-15-6.7-15-15c0-8.3,6.7-15,15-15s15,6.7,15,15C65,58.3,58.3,65,50,65z">
+                                <animateTransform attributeName="transform" type="rotate" from="90 50 50" to="0 50 50" dur="1s" repeatCount="indefinite"></animateTransform>
+                            </path>
+                        </g>
+                        <g transform="translate(20,20) rotate(15 50 50)">
+                            <path fill="#9f9fab" d="M79.9,52.6C80,51.8,80,50.9,80,50s0-1.8-0.1-2.6l-5.1-0.4c-0.3-2.4-0.9-4.6-1.8-6.7l4.2-2.9c-0.7-1.6-1.6-3.1-2.6-4.5 L70,35c-1.4-1.9-3.1-3.5-4.9-4.9l2.2-4.6c-1.4-1-2.9-1.9-4.5-2.6L59.8,27c-2.1-0.9-4.4-1.5-6.7-1.8l-0.4-5.1C51.8,20,50.9,20,50,20 s-1.8,0-2.6,0.1l-0.4,5.1c-2.4,0.3-4.6,0.9-6.7,1.8l-2.9-4.1c-1.6,0.7-3.1,1.6-4.5,2.6l2.1,4.6c-1.9,1.4-3.5,3.1-5,4.9l-4.5-2.1 c-1,1.4-1.9,2.9-2.6,4.5l4.1,2.9c-0.9,2.1-1.5,4.4-1.8,6.8l-5,0.4C20,48.2,20,49.1,20,50s0,1.8,0.1,2.6l5,0.4 c0.3,2.4,0.9,4.7,1.8,6.8l-4.1,2.9c0.7,1.6,1.6,3.1,2.6,4.5l4.5-2.1c1.4,1.9,3.1,3.5,5,4.9l-2.1,4.6c1.4,1,2.9,1.9,4.5,2.6l2.9-4.1 c2.1,0.9,4.4,1.5,6.7,1.8l0.4,5.1C48.2,80,49.1,80,50,80s1.8,0,2.6-0.1l0.4-5.1c2.3-0.3,4.6-0.9,6.7-1.8l2.9,4.2 c1.6-0.7,3.1-1.6,4.5-2.6L65,69.9c1.9-1.4,3.5-3,4.9-4.9l4.6,2.2c1-1.4,1.9-2.9,2.6-4.5L73,59.8c0.9-2.1,1.5-4.4,1.8-6.7L79.9,52.6 z M50,65c-8.3,0-15-6.7-15-15c0-8.3,6.7-15,15-15s15,6.7,15,15C65,58.3,58.3,65,50,65z">
+                                <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="90 50 50" dur="1s" repeatCount="indefinite"></animateTransform>
+                            </path>
+                        </g>
+                    </svg>
                 </div>
-                iv
-                ">
-                <div id="go-top">
-                    <a class="smoothscroll" title="Back to Top" href="#top"><i class="glyphicon glyphicon-chevron-up"></i></a>
+
+
+                <div class="search_info" ng-if="searchVkCont">
+                    <div class="search input-group">
+                        <button id="search_continue" ng-click="searchVkContinue()" class="btn btn-default">Загрузить еще фотографии</button>
+                        <span class="input-group-addon search_limit">
+                            <div>60</div>
+                        </span>
+                        <!--Работает с костылем-->
+                        <label for="default" class="btn btn-default" title="Автоматически продолжать загрузку фотографий">Авто<input type="checkbox" id="default" class="badgebox" ng-model="autoSearch" ng-change="autoSearchChanged()"/><span class="badge">&check;</span></label>
+                    </div>
+                    <!--<div class="input-group date">
+                        <span class="input-group-addon">
+                            <span id="searc_limit"></span>
+                        </span>
+                    </div>-->
+                    <hr />
+                    <p ng-model="countOfPhotos">Количество фотографий: {{countOfPhotos}}</p>
+                    <p ng-model="countOfUsers">Количество пользователей: {{countOfUsers}}</p>
+                    <p ng-model="countOfGroups">Количество групп: {{countOfGroups}}</p>
+                    <!--<p ng-model="lastPhotoDate">Дата последней в списке фотографии: {{lastPhotoDate | date:'yyyy-MM-dd HH:mm:ss'}}</p>-->
                 </div>
             </div>
+
+            <!-- Yandex.Metrika informer -->
+                <!--<a href="https://metrika.yandex.ru/stat/?id=42504114&amp;from=informer"
+                   target="_blank" rel="nofollow">
+                    <img src="https://informer.yandex.ru/informer/42504114/3_0_FFFFFFFF_FFFFFFFF_0_pageviews"
+                         style="width:88px; height:31px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)" class="ym-advanced-informer" data-cid="42504114" data-lang="ru" />
+                </a>-->
+            <!-- /Yandex.Metrika informer -->
+        </div>
+        <div id="go-top">
+            <a class="smoothscroll" title="Back to Top" href="#top"><i class="glyphicon glyphicon-chevron-up"></i></a>
+        </div>
+        
+    </div>
 
 
 
@@ -287,7 +383,8 @@
     <script src="js/modules/mainApp/mainApp.js"></script>
     <script src="js/modules/mainApp/controllers/MapCtrl.js"></script>
     <script src="js/modules/mainApp/services/serviceSearchVk.js"></script>
-    <script src="js/modules/mainApp/directives/photoAll.js"></script>
+    <!--<script src="js/modules/mainApp/directives/photoAll.js"></script>-->
+    <script src="js/modules/mainApp/directives/imageInList.js"></script>
     <script src="js/modules/mainApp/directives/photoUsers.js"></script>
     <!--<script type="text/javascript">
         $(function () {

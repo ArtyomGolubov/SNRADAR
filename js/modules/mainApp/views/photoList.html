@@ -1,0 +1,3 @@
+﻿<image-in-list class="photo_list" ng-repeat="photo in resultList.photos | filter:q | startFrom:currentPage*pageSize | limitTo:pageSize">{{photo}}
+    <!--<img id="{{$index}}" ng-model="photo" data-loading-text="{{photo.photo_75}}" src="{{photo.photo_75}}" class="photo_in_result" ng-click="photoModal(photo)" onerror="onerrorImg(this)" />-->
+</image-in-list>

@@ -1,4 +1,4 @@
-﻿mainApp.controller('MapCtrl', function ($scope, $cookies, $timeout, ymapsLoader, serviceSearchVk) {
+﻿mainApp.controller('MapCtrl', ['$scope', '$cookies', '$timeout', '$filter', 'ymapsLoader', 'serviceSearchVk', function ($scope, $cookies, $timeout, $filter, ymapsLoader, serviceSearchVk) {
 
 
     // cookies --------------------
@@ -192,7 +192,7 @@
                 $scope.dateStart = $("#datetimepicker1 input").val();
                 console.log($scope.dateStart);
                 $scope.dateEnd = $("#datetimepicker2 input").val();
-                console.log($scope.dateEnd);
+                //console.log($scope.dateEnd);
             });
         }, 1000);
     }
@@ -258,6 +258,8 @@
 
                 //console.log('$scope.resultList.lastPhoto.date', $scope.resultList.lastPhoto.date);
                 $scope.lastPhoto = $scope.resultList.lastPhoto;
+
+                $scope.FirstAndLastPhotosDatesInPageInit();
             }
             else {
                 $scope.searchVkCont = false;
@@ -278,6 +280,10 @@
             $scope.countOfGroups = $scope.resultList.groups.length;
         });
     });
+
+    $scope.$watch('currentPage', function () {
+        $scope.FirstAndLastPhotosDatesInPageInit();
+    });
     // </обновления>
     $scope.searchLoading = false;
     $scope.searchCounter = 0;
@@ -286,6 +292,7 @@
     // жмем кнопку поиска
     $scope.searchVk = function () {
         console.info('------------ searchVk------------');
+
         // чистим блок найденных пользователей
         $('.photo_users, .photo_groups').children().remove().end().text($.trim($('#element_id').text()));
 
@@ -309,7 +316,6 @@
             long: $scope.circleProp.coords[1],
             radius: $scope.radiuses[$scope.circleProp.radius].value
         }, function (res) {
-            console.log('pista: ', res);
             $scope.searchLoading = false;
             $scope.$applyAsync(function () {
                 $scope.resultList = serviceSearchVk.VKdata;
@@ -318,9 +324,20 @@
         });
     }
 
+    $scope.autoSearchTimeout = 20;
+    $scope.autoSearch = false;
+    //просто пиздец какой костыль
+    $scope.autoSearchChanged = function () {
+        $scope.autoSearch = !$scope.autoSearch;
+        console.log('$scope.autoSearch = ', $scope.autoSearch)
+    }
+
     // жмем кнопку продолжения поиска
     $scope.searchVkContinue = function () {
         console.info('------------ searchVkContinue------------');
+
+        $scope.FirstAndLastPhotosDatesInPageInit();
+
         $scope.searchLoading = true;
         $scope.searchCounter++;
 
@@ -344,18 +361,29 @@
             $scope.searchLoading = false;
             $scope.$apply(function () {
                 $scope.resultList = serviceSearchVk.VKdata;
-                console.log('result: ', $scope.resultList);
+                //console.log('result: ', $scope.resultList);
                 // повторный, автоматический запрос, после истечения таймера
-                if (serviceSearchVk.VKdata.photosTmp == 0) {
+                if (serviceSearchVk.VKdata.photosTmp.length == 0) {
                     btnTimeout($('#search_continue'), 30, function() {
                         $scope.searchVkContinue();
                     });
+                }
+                else {
+                    console.log($scope.autoSearch);
+                    // чтобы получить вообще все фотки в афк режиме
+                    if ($scope.autoSearch) {
+                        setTimeout(function () {
+                            
+                            $scope.searchVkContinue();
+                        }, $scope.autoSearchTimeout * 1000);
+                    }
                 }
             });
         });
     }
     //----------------- Жмем на фото -------------------//
     $scope.photoModal = function (photo) {
+        console.info('counterErrorsForIMG = ', counterErrorsForIMG);
         //console.log(angular.element($event.target));
         //var elem = angular.element($event.target);
         var photoOrig = photo.photo_1280 || photo.photo_807 || photo.photo_604;
@@ -397,4 +425,49 @@
 		 	    });
 		 	});
     }
-});
+
+    // для пагинации общего списка фотографий
+    //--- Для пагинации и поиска по фильтру ---//
+    $scope.currentPage = 0;
+    $scope.pageSize = 50;
+    $scope.q = '';
+
+    $scope.getData = function () {
+        // needed for the pagination calc
+        // https://docs.angularjs.org/api/ng/filter/filter
+        // в эту функцию 100500 заходов. Хз должно ли столько быть
+        //console.log('$scope.getData');
+
+        //return $filter('filter')($scope.resultList.photos, $scope.q);;
+        return $scope.resultList.photos; // без поиска по фильру эта вся фигня не нужна)
+    }
+
+    $scope.numberOfPages = function () {
+        //return Math.ceil($scope.getData().length / $scope.pageSize);
+        return Math.ceil($scope.resultList.photos.length / $scope.pageSize);
+    }
+    //--//
+
+    $scope.firstPhotoInPageDate;
+    $scope.lastPhotoInPageDate;
+
+    $scope.FirstAndLastPhotosDatesInPageInit = function () {
+        var currentPage = parseInt($scope.currentPage, 10);
+        var pageSize = parseInt($scope.pageSize, 10);
+        var firstPhotoInPage;
+        var lastPhotoInPage;
+        if (serviceSearchVk.VKdata.photosTmp.length > 0) {
+            firstPhotoInPage = $scope.resultList.photos[currentPage * pageSize];
+            if ((currentPage * pageSize + pageSize) < $scope.resultList.photos.length) {
+                lastPhotoInPage = $scope.resultList.photos[currentPage * pageSize + pageSize];
+            }
+            else {
+                lastPhotoInPage = $scope.resultList.photos[$scope.resultList.photos.length - 1];
+            }
+        }
+        if (firstPhotoInPage != undefined)
+            $scope.firstPhotoInPageDate = moment(firstPhotoInPage.date * 1000).format('YYYY-MM-DD  HH:mm:ss');
+        if (lastPhotoInPage != undefined)
+            $scope.lastPhotoInPageDate = moment(lastPhotoInPage.date * 1000).format('YYYY-MM-DD  HH:mm:ss');
+    }
+}]);
