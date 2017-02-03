@@ -132,6 +132,17 @@
         //Без setTimeout срабатывает раньше инициализации карты
         setTimeout(function () {
             ymapsLoader.map.geoObjects.add($scope.myCircle);
+
+            ymapsLoader.map.events.add('click', function (e) {
+                $scope.myCircle.geometry.setCoordinates(e._sourceEvent._cache.coords);
+                $scope.$applyAsync(function () {
+                    $scope.circleProp.coords = $scope.myCircle.geometry.getCoordinates();
+                    $scope.circleProp.coords[0] = $scope.circleProp.coords[0].toFixed(4);
+                    $scope.circleProp.coords[1] = $scope.circleProp.coords[1].toFixed(4);
+                    //console.log($scope.circleProp.coords);
+                });
+                //console.log('Событие на карте = ', e._sourceEvent._cache.coords); // Возникнет при щелчке на карте, но не на маркере.
+            });
         }, 0);
 
         //-------------------
@@ -429,7 +440,11 @@
     // для пагинации общего списка фотографий
     //--- Для пагинации и поиска по фильтру ---//
     $scope.currentPage = 0;
-    $scope.pageSize = 50;
+    $scope.pageSizes = [10, 50, 100, 200, 400, 700, 1000];
+    $scope.selectPageSize = function () {
+        $scope.currentPage = 0;
+        console.info('$scope.pageSize = ', $scope.pageSize);
+    }
     $scope.q = '';
 
     $scope.getData = function () {

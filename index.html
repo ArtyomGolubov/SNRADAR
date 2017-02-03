@@ -186,7 +186,6 @@
                                             Радиус:
                                         </span>
                                         <select class="form-control" name="radius" id="radius" ng-model="circleProp.radius" ng-change="selectRadius()">
-                                            fgdfg
                                             <option ng-repeat="radius in radiuses" value="{{radius.id}}" ng-bind="radius.name"></option>
                                         </select>
                                     </label><br />
@@ -260,14 +259,12 @@
                         <div class="pagination_group">
                             <div class="justify">
                                 <div><small>Количество фотографий на странице :</small></div>
-                                <select ng-model="pageSize" id="pageSize" class="form-control" ng-change="currentPage=0" value="100">
-                                    <option value="10">10</option>
-                                    <option selected="selected" value="50">50</option>
-                                    <option value="100">100</option>
-                                    <option value="200">200</option>
-                                    <option value="400">400</option>
-                                    <option value="700">700</option>
-                                    <option value="1000">1000</option>
+                                <!--Как же долго я пытался отобразить дефолтное значение в <select id="pageSize"></select>-->
+                                <select class="form-control" name="pageSize" id="pageSize"
+                                        ng-model="pageSize"
+                                        ng-change="selectPageSize()"
+                                        ng-init="pageSize = pageSizes[1]"
+                                        ng-options="pSize for pSize in pageSizes">
                                 </select>
                             </div>
 
