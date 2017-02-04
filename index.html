@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <title>Веб сервис для поиска фотографий в соцсетях, на основе их геолокационных данных</title>
 	<meta charset="utf-8" />
 
     <!-- mobile specific metas
@@ -38,7 +38,7 @@
 </head>
 <body id="top" ng-app="mainApp" ng-controller="MapCtrl" ng-init="dateInit()">
 
-    
+
     <!-- Yandex.Metrika counter -->
     <!--<script type="text/javascript">
         (function (d, w, c) {
@@ -69,7 +69,7 @@
     <!-- /Yandex.Metrika counter -->
 
     <script type="text/javascript">
-        
+
     </script>
 
     <!--<div id="vk_api_transport"></div>
@@ -91,10 +91,16 @@
 
     <div id="overlay"></div>
     <div class="photo_discription_top">
-        <div class="close_btn glyphicon glyphicon-remove"></div>
+        <div class="btn_right_block">
+            <div class="close_btn glyphicon glyphicon-remove"></div>
+            <div class="prev_and_next_block_btn">
+                <div id="prev_photo" class="glyphicon glyphicon-chevron-left" ng-click="go_to_prev_photo()" ng-disabled="indexNextPage == 1"></div>
+                <div id="next_photo" class="glyphicon glyphicon-chevron-right" ng-click="go_to_next_photo()" ng-disabled="indexPrevPage == resultList.photos.length - 2"></div>
+            </div>
+        </div>
         <a class="owner_name" target="_blank"></a>
 
-        
+
         <div class="photo_date" ng-model="photo_date">
             <button type="button" data-toggle="dropdown" class="btn_photo_menu dropdown-toggle">
                 <span class="caret"></span>
@@ -108,7 +114,11 @@
             </ul>
         </div>
     </div>
-    <a href="" id="photo_orig_link" target="_blank"><img id="photo_modal" class="img-responsive" /></a>
+    <div>
+        <a href="" id="photo_orig_link" target="_blank">
+            <img id="photo_modal" class="img-responsive" />
+        </a>
+    </div>
 
     <div id="photo_date"></div>
     <div id="content">
@@ -264,8 +274,7 @@
                                         ng-model="pageSize"
                                         ng-change="selectPageSize()"
                                         ng-init="pageSize = pageSizes[1]"
-                                        ng-options="pSize for pSize in pageSizes">
-                                </select>
+                                        ng-options="pSize for pSize in pageSizes"></select>
                             </div>
 
                             <button class="btn btn-default" ng-disabled="currentPage == 0" ng-click="currentPage=0">
@@ -283,7 +292,7 @@
                             </button>
                         </div>
                         <div ng-show="resultList.photos.length > 0" class="photo_date_diapazon">
-                            <span>{{firstPhotoInPageDate}}</span><span>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</span> 
+                            <span>{{firstPhotoInPageDate}}</span><span>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</span>
                             <span>{{lastPhotoInPageDate}}</span>
                         </div>
 
@@ -344,7 +353,7 @@
                             <div>60</div>
                         </span>
                         <!--Работает с костылем-->
-                        <label for="default" class="btn btn-default" title="Автоматически продолжать загрузку фотографий">Авто<input type="checkbox" id="default" class="badgebox" ng-model="autoSearch" ng-change="autoSearchChanged()"/><span class="badge">&check;</span></label>
+                        <label for="default" class="btn btn-default" title="Автоматически продолжать загрузку фотографий">Авто<input type="checkbox" id="default" class="badgebox" ng-model="autoSearch" ng-change="autoSearchChanged()" /><span class="badge">&check;</span></label>
                     </div>
                     <!--<div class="input-group date">
                         <span class="input-group-addon">
@@ -359,30 +368,39 @@
                 </div>
             </div>
 
+
+
             <!-- Yandex.Metrika informer -->
-                <!--<a href="https://metrika.yandex.ru/stat/?id=42504114&amp;from=informer"
-                   target="_blank" rel="nofollow">
-                    <img src="https://informer.yandex.ru/informer/42504114/3_0_FFFFFFFF_FFFFFFFF_0_pageviews"
-                         style="width:88px; height:31px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)" class="ym-advanced-informer" data-cid="42504114" data-lang="ru" />
-                </a>-->
+            <!--<a href="https://metrika.yandex.ru/stat/?id=42504114&amp;from=informer"
+               target="_blank" rel="nofollow">
+                <img src="https://informer.yandex.ru/informer/42504114/3_0_FFFFFFFF_FFFFFFFF_0_pageviews"
+                     style="width:88px; height:31px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)" class="ym-advanced-informer" data-cid="42504114" data-lang="ru" />
+            </a>-->
             <!-- /Yandex.Metrika informer -->
         </div>
         <div id="go-top">
             <a class="smoothscroll" title="Back to Top" href="#top"><i class="glyphicon glyphicon-chevron-up"></i></a>
         </div>
-        
+
     </div>
 
 
 
-    <script src="libs/plugins.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/modules/mainApp/mainApp.js"></script>
-    <script src="js/modules/mainApp/controllers/MapCtrl.js"></script>
-    <script src="js/modules/mainApp/services/serviceSearchVk.js"></script>
+    <script src="libs/plugins.js">
+    </script>
+    <script src="js/main.js">
+    </script>
+    <script src="js/modules/mainApp/mainApp.js">
+    </script>
+    <script src="js/modules/mainApp/controllers/MapCtrl.js">
+    </script>
+    <script src="js/modules/mainApp/services/serviceSearchVk.js">
+    </script>
     <!--<script src="js/modules/mainApp/directives/photoAll.js"></script>-->
-    <script src="js/modules/mainApp/directives/imageInList.js"></script>
-    <script src="js/modules/mainApp/directives/photoUsers.js"></script>
+    <script src="js/modules/mainApp/directives/imageInList.js">
+    </script>
+    <script src="js/modules/mainApp/directives/photoUsers.js">
+    </script>
     <!--<script type="text/javascript">
         $(function () {
             //Инициализация datetimepicker8 и datetimepicker9

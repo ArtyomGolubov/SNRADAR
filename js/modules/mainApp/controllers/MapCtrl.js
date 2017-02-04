@@ -393,8 +393,17 @@
         });
     }
     //----------------- Жмем на фото -------------------//
-    $scope.photoModal = function (photo) {
-        console.info('counterErrorsForIMG = ', counterErrorsForIMG);
+    $scope.photoModal = function (photo, index) {
+
+        
+
+        $scope.currentIndexPhoto = index;
+        $scope.indexPrevPage = index > 0 ? index - 1 : 0;
+        $scope.indexNextPage = index < $scope.resultList.photos.length - 1 ? index + 1 : $scope.resultList.photos.length - 1;
+        console.info('1 $scope.indexPrevPage = ', $scope.indexPrevPage);
+        console.info('1 $scope.indexNextPage = ', $scope.indexNextPage);
+
+        console.info('photoIndex = ', index);
         //console.log(angular.element($event.target));
         //var elem = angular.element($event.target);
         var photoOrig = photo.photo_1280 || photo.photo_807 || photo.photo_604;
@@ -418,9 +427,9 @@
 		 	    // Пишем дату фотографии
 		 	    //var photo_date = $('.photo_date').eq(0);
 		 	    //photo_date.text("Date: " + String(new Date(photo.date * 1000)).substr(0, 25));
-		 	    $scope.$apply(function () {
+		 	    //$scope.$apply(function () {
 		 	        $scope.photo_date = new Date(photo.date * 1000);
-		 	    });
+		 	    //});
 
 		 	    //показывпем блок с информацией
 		 	    photo_discription_top.css('display', 'block')
@@ -462,6 +471,24 @@
         return Math.ceil($scope.resultList.photos.length / $scope.pageSize);
     }
     //--//
+
+    $scope.go_to_prev_photo = function () {
+        var index = ($scope.indexPrevPage + 1) % $scope.pageSize;
+        if (index == 0 && $scope.currentPage > 0) {
+            $scope.currentPage--;
+        }
+        //console.log('$scope.currentPage = ', $scope.currentPage);
+        $scope.photoModal($scope.resultList.photos[$scope.indexPrevPage], $scope.indexPrevPage);
+    }
+
+    $scope.go_to_next_photo = function () {
+        var index = $scope.indexNextPage % $scope.pageSize;
+        if (index == 0 && $scope.currentPage < $scope.numberOfPages() - 1) {
+            $scope.currentPage++;
+        }
+        //console.log('$scope.currentPage = ', $scope.currentPage);
+        $scope.photoModal($scope.resultList.photos[$scope.indexNextPage], $scope.indexNextPage);
+    }
 
     $scope.firstPhotoInPageDate;
     $scope.lastPhotoInPageDate;

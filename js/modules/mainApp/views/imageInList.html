@@ -1,1 +1,5 @@
-﻿<img id="{{$index}}" ng-model="photo" data-loading-text="{{photo.photo_75}}" src="{{photo.photo_75}}" class="photo_in_result" ng-click="photoModal(photo)" onerror="onerrorImg(this)"/>
+﻿<img id="{{$index + currentPage * pageSize}}" ng-model="photo" 
+     data-loading-text="{{photo.photo_75}}" 
+     src="{{photo.photo_75}}" ng-class="currentIndexPhoto == ($index + currentPage * pageSize) ? 'active photo_in_result' : ''" class="photo_in_result" 
+     ng-click="photoModal(photo, $index + currentPage * pageSize)" 
+     onerror="onerrorImg(this)"/>

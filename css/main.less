@@ -443,20 +443,63 @@ yandex-map {
         }
     }
 
-    .close_btn {
+    .btn_right_block {
         float: right;
-        padding-left: 10px;
-        right: 0px;
-        font-size: 16px;
-        cursor: pointer;
+
+        .close_btn {
+            /*float: right;*/
+            padding-left: 10px;
+            right: 0px;
+            font-size: 16px;
+            cursor: pointer;
+
+            &:hover {
+                color: darken(@colorBacground, 10%);
+            }
+        }
     }
 
-    .close_btn:hover {
-        color: darken(@colorBacground, 10%);
-    }
+    .prev_and_next_block_btn {
+        display: flex;
+        position: absolute;
+        right: -98px;
+        top: -1px;
+        padding: 7px;
+        border-radius: 5px;
+        border: 1px solid #999999;
+        color: #fff !important;
+        background-color: #3a4141 !important;
+        text-decoration: none;
+        /* left: 210%; */
+        z-index: 11;
+        font-size: 40px;
+
+        #prev_photo, #next_photo {
+            cursor: pointer;
+
+            &:hover {
+                color: darken(@colorBacground, 10%);
+            }
+
+            &[disabled] {
+                cursor: not-allowed;
+            }
+        }
+    }    
 
     @media only screen and (max-height : 481px) {
         top: 5%;
+    }
+
+    @media only screen and (max-width : 481px) {
+        padding: 3px;
+        max-width: 200px;
+
+        .prev_and_next_block_btn {
+            right: -85px;
+            padding: 5px;
+            font-size: 36px;
+        }
     }
 }
 
@@ -464,6 +507,10 @@ yandex-map {
     height: 75px;
     cursor: pointer;
     border-left: 1px solid darken(@colorMainFont, 40%);
+
+    &.active {
+        border: 3px solid @colorMainFont;
+    }
 }
 
 .loading {
